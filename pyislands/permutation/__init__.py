@@ -1,3 +1,3 @@
-import mutation
-import crossover
-import tsp
+import pyislands.permutation.mutation
+import pyislands.permutation.crossover
+import pyislands.permutation.tsp

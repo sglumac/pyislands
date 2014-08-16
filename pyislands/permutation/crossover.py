@@ -9,6 +9,7 @@ with signature:
 where object children is list of individuals.
 '''
 from random import sample
+from itertools import chain
 
 
 def cyclic_crossover(parent1, parent2):
@@ -47,7 +48,7 @@ def partially_mapped_crossover(parent1, parent2):
             child2[break1:break2], child1[break1:break2]
     swath1, swath2 = child1[break1:break2], child2[break1:break2]
 
-    for i in range(break1) + range(break2, num_genes):
+    for i in chain(range(break1), range(break2, num_genes)):
         gen = child1[i]
         while gen in swath1:
             j = swath1.index(gen)

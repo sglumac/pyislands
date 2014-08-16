@@ -1,3 +1,3 @@
-import testmutation
-import testcrossover
-import testtsp
+import tests.permutation.testmutation
+import tests.permutation.testcrossover
+import tests.permutation.testtsp

@@ -1,5 +1,4 @@
 from math import sqrt
-from itertools import izip
 from random import random
 
 
@@ -26,7 +25,7 @@ def evaluate_path(adjacency_matrix, tsp_path):
     tsp_path = [city1, city2, ..., cityn]
     '''
     return sum(adjacency_matrix[city1][city2]
-               for city1, city2 in izip(tsp_path[:-1], tsp_path[1:]))
+               for city1, city2 in zip(tsp_path[:-1], tsp_path[1:]))
 
 
 def random_cities(num_cities=100):

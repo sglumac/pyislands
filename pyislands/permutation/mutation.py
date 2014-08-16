@@ -8,8 +8,6 @@ with signature:
 
 '''
 import random
-from numpy.random import binomial
-from itertools import izip
 
 
 def reversed_sequence_mutation(mutation_probability, genotype):
@@ -33,7 +31,7 @@ def every_city_mutation(mutation_probability, genotype):
     Exchange Every City - each with given probability
     '''
     num_genes = len(genotype)
-    new_genotype = genotype[:]
+    new_genotype = list(genotype)
 
     idxs = range(num_genes)
     for _ in idxs:
@@ -44,17 +42,22 @@ def every_city_mutation(mutation_probability, genotype):
     return tuple(new_genotype)
 
 
+def binomial(n, p):
+    ''' innefective binomial distribution '''
+    return sum(random.random() < p for _ in range(n))
+
+
 def every_city_mutation2(mutation_probability, genotype):
     '''
     Exchange Every City - each with given probability
     '''
     num_genes = len(genotype)
-    new_genotype = genotype[:]
+    new_genotype = list(genotype)
 
     num_exchanged = binomial(num_genes - 1, mutation_probability)
     idxs = random.sample(range(num_genes), num_exchanged)
 
-    for i, j in izip(idxs, sorted(idxs)):
+    for i, j in zip(idxs, sorted(idxs)):
         new_genotype[i], new_genotype[j] = new_genotype[j], new_genotype[i]
 
     return tuple(new_genotype)
