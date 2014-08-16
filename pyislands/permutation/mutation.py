@@ -33,32 +33,28 @@ def every_city_mutation(mutation_probability, genotype):
     Exchange Every City - each with given probability
     '''
     num_genes = len(genotype)
+    new_genotype = genotype[:]
 
     idxs = range(num_genes)
     for _ in idxs:
         if random.random() < mutation_probability:
             i, j = random.sample(idxs, 2)
-            genotype[i], genotype[j] = genotype[j], genotype[i]
+            new_genotype[i], new_genotype[j] = new_genotype[j], new_genotype[i]
 
-    child = {'genotype': genotype,
-             'penalty': penalty_fcn(genotype)}
-
-    return child
+    return tuple(new_genotype)
 
 
-def every_city_mutation2(mutation_probability, penalty_fcn, parent):
+def every_city_mutation2(mutation_probability, genotype):
     '''
     Exchange Every City - each with given probability
     '''
-    genotype = list(parent['genotype'])
     num_genes = len(genotype)
+    new_genotype = genotype[:]
 
     num_exchanged = binomial(num_genes - 1, mutation_probability)
     idxs = random.sample(range(num_genes), num_exchanged)
+
     for i, j in izip(idxs, sorted(idxs)):
-        genotype[i], genotype[j] = genotype[j], genotype[i]
+        new_genotype[i], new_genotype[j] = new_genotype[j], new_genotype[i]
 
-    child = {'genotype': genotype,
-             'penalty': penalty_fcn(genotype)}
-
-    return child
+    return tuple(new_genotype)

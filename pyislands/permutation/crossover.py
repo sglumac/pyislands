@@ -23,7 +23,7 @@ def cyclic_crossover(parent1, parent2):
     while -1 in child1:
         i = child1.index(-1)
         while parent2[i] not in child1:
-            j = parent1.index(pgen2[i])
+            j = parent1.index(parent2[i])
             child1[j] = parent1[j]
             child2[j] = parent2[j]
             i = j
@@ -43,21 +43,21 @@ def partially_mapped_crossover(parent1, parent2):
 
     break1, break2 = sorted(sample(range(num_genes + 1), 2))
 
-    cgen1[break1:break2], cgen2[break1:break2] = \
-            cgen2[break1:break2], cgen1[break1:break2]
-    swath1, swath2 = cgen1[break1:break2], cgen2[break1:break2]
+    child1[break1:break2], child2[break1:break2] = \
+            child2[break1:break2], child1[break1:break2]
+    swath1, swath2 = child1[break1:break2], child2[break1:break2]
 
     for i in range(break1) + range(break2, num_genes):
-        gen = cgen1[i]
+        gen = child1[i]
         while gen in swath1:
             j = swath1.index(gen)
             gen = swath2[j]
-        cgen1[i] = gen
+        child1[i] = gen
 
-        gen = cgen2[i]
+        gen = child2[i]
         while gen in swath2:
             j = swath2.index(gen)
             gen = swath1[j]
-        cgen2[i] = gen
+        child2[i] = gen
 
-    return child1, child2
+    return tuple(child1), tuple(child2)

@@ -2,7 +2,6 @@
 steady state algorithm
 '''
 from random import sample
-from operator import itemgetter
 
 
 def ktournament(population, k):
@@ -10,22 +9,21 @@ def ktournament(population, k):
     randomly select k-individuals from the population
     and sort them by penalty in the increasing order
     '''
-    enumerated_population = ((individual, idx) for idx, individual in
-                             enumerate(population))
+    enumerated_population = [(individual, idx) for idx, individual in
+                             enumerate(population)]
     individuals, idxs = zip(*sorted(sample(enumerated_population, k)))
     return individuals, idxs
 
 
-def evolution(generate, crossover, mutate, evaluate, population_size):
+def generate_population(generate, evaluate, num_individuals):
     '''
-    algorithm uses steady state iteration, yields population each
-    iteration and enables gathering statistics in between
+    generates num_individuals in population
     '''
-    population = [generate() for _ in range(population_size)]
+    genotypes = (generate() for _ in range(num_individuals))
+    population = tuple((evaluate(genotype), genotype)
+                       for genotype in genotypes)
 
-    while True:
-        yield population
-        population = iteration(crossover, mutate, evaluate, population)
+    return population
 
 
 def iteration(crossover, mutate, evaluate, population):
@@ -36,20 +34,21 @@ def iteration(crossover, mutate, evaluate, population):
 # Selection = 3-Tournament
     individuals, idxs = ktournament(population, 3)
     parents = individuals[0:2]
+    bad_idx = idxs[2]
 
 # Crossover
     genotype1, genotype2 = (genotype for _, genotype in parents)
-    children_genotypes = crossover(genotype1, genotype2)
-    best_genotype = min(children_genotypes, key=evaluate)
+    children = crossover(genotype1, genotype2)
+    best_genotype = min(children, key=evaluate)
 
 # Mutation
-    child_genotype = mutate(best_genotype)
-    child_penalty = evaluate(child_genotype)
+    new_genotype = mutate(best_genotype)
+    penalty = evaluate(new_genotype)
 
-    child = (child_penalty, child_genotype)
+    child = (penalty, new_genotype)
 
 # Replace bad individual
-    new_population = population[:]
-    new_population[idxs[2]] = child
+    new_population = list(population)
+    new_population[bad_idx] = child
 
-    return new_population
+    return tuple(new_population)

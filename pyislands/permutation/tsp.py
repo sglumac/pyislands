@@ -1,4 +1,6 @@
 from math import sqrt
+from itertools import izip
+from random import random
 
 
 def generate_graph(cities):
@@ -17,11 +19,24 @@ def generate_graph(cities):
     return adjacency_matrix
 
 
-def evaluate_cycle(adjacency_matrix, tsp_cycle):
+def evaluate_path(adjacency_matrix, tsp_path):
     '''
     function for evaluation of cycle given list
 
-    tsp_cycle = [city0, city1, city2, ..., cityn-1, city0]
+    tsp_path = [city1, city2, ..., cityn]
     '''
     return sum(adjacency_matrix[city1][city2]
-               for city1, city2 in izip(tsp_cycle[:-1], tsp_cycle[1:]))
+               for city1, city2 in izip(tsp_path[:-1], tsp_path[1:]))
+
+
+def random_cities(num_cities=100):
+    '''
+    create graph for Travelling Salesman
+    Problem with n cities randomly distributed on
+    square [0, 1) x [0, 1)
+    '''
+    x = [random() for _ in range(num_cities)]
+    y = [random() for _ in range(num_cities)]
+    cities = zip(x, y)
+
+    return cities
