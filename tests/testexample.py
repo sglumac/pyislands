@@ -11,5 +11,5 @@ def test_tsp():
 
     solution, penalty = solve_tsp(adjacency_matrix, num_cities, 200)
 
-    assert sorted(solution) == [0] + range(num_cities)
+    assert sorted(solution) == [0] + list(range(num_cities))
     assert penalty <= num_cities * sqrt(2)

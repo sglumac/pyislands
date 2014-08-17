@@ -36,6 +36,6 @@ def random_cities(num_cities=100):
     '''
     x = [random() for _ in range(num_cities)]
     y = [random() for _ in range(num_cities)]
-    cities = zip(x, y)
+    cities = list(zip(x, y))
 
     return cities
