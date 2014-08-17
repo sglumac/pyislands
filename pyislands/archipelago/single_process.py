@@ -53,20 +53,23 @@ def create(operators, num_islands, population_size=20,
     return islands
 
 
-def get_solution(islands, numiters=1000):
+def get_solution(island_evolutions, num_iterations, info=None):
     '''
     run synchronous genetic algorithm on all islands
     and get a solution
     '''
-    for iteration in range(numiters):
-        for island in islands:
-            print("iteration = {0}, penalty = {1}".format(iteration, island['best']['penalty']))
-            receive_immigration(island)
-            ga.steady.iteration(island)
-            if island['stats']['born'] % island['airport']['migration_interval'] == 0:
-                send_emmigration(island)
+
+    evolutions = [evolution() for evolution in island_evolutions]
+
+
+    for evolution in evolutions:
+        iteration, population = evolution.next()
+        if info:
+            info(iteration, population)
+
 
     return min(min(population) for population in islands)
+
 
 
 def get_stagnation_solution(islands, max_stagnation=1000):

@@ -1,6 +1,5 @@
 from pyislands.selection import ktournament
 
-from itertools import takewhile
 import operator
 
 
@@ -9,23 +8,12 @@ def generate_population(generate, evaluate, num_individuals):
     generates num_individuals in population
     '''
     genotypes = (generate() for _ in range(num_individuals))
-    population = tuple((evaluate(genotype), genotype)
-                       for genotype in genotypes)
+
+    create_individual = lambda genotype: (evaluate(genotype), genotype)
+
+    population = tuple(map(create_individual, genotypes))
 
     return population
-
-
-def evolution(generate, evolve):
-    '''
-    generator for populations during evolution
-
-    new_population = generate() - creates population
-    new_population = evolve(population) - evolves population
-    '''
-    population = generate()
-    while True:
-        yield population
-        population = evolve(population)
 
 
 def simple_info(iteration, population):
@@ -34,14 +22,14 @@ def simple_info(iteration, population):
     print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
 
 
-def get_solution(evolution, num_iterations, info=None):
+def get_solution(generate, evolve, num_iterations, info=None):
     ''' get solution with info '''
 
-    running = lambda en: en[0] < num_iterations
-
-    for iteration, population in takewhile(running, enumerate(evolution())):
+    population = generate()
+    for iteration in range(num_iterations):
         if info:
             info(iteration, population)
+        population = evolve(population)
 
     penalty, solution = min(population)
 
