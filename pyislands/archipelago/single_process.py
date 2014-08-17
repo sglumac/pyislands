@@ -1,44 +1,44 @@
 '''
 Synchronous Island creation for testing on a single computer,
-this module connects island abstraction
+this module connects populations/islands using simple queues/lists.
 '''
-import ga
-from ga.selection import ktournament
-from ga.utility import replace, check_best
-
 import random
 from operator import itemgetter
 
 
-
-def generate_topology(num_islands, degree):
+def create_migrations(topology):
     '''
-    Creates a directed, regular, fully connected graph with
-    given degree of each vertex/island. This function is used
-    for creating migration topology, return its adjacency list.
+    Create functions used for transferring individuals from
+    one islands to another, creates tuple of tuples.
+
+    topology - directed graph representing connections between islands
     '''
-    idxs = list(range(num_islands))
-    neighbors = [idxs[-i:] + idxs[:-i] for i in range(degree, 0, -1)]
+    num_islands = len(topology)
 
-    return list(zip(*neighbors))
+# an airport receives individuals, it's a traffic stop for an islands
+# for single process implementation, an airport is a simple list
+    airports = [list() for _ in range(num_islands)]
 
+    def generate_immigration(airport):
+        def immigrate():
+            immigrants = []
+            while airport:
+                immigrants.append(airport.pop())
+            return tuple(immigrants)
 
-def create_migrations():
-    '''
-    create functions used for transferring individuals from
-    one islands to another, creates tuple of tuplles
-    '''
-    pass
+    immigrations = tuple(map(generate_immigration, airports))
 
+    def generate_emmigration(idx):
+        destination = airports[idx]
+        def emmigrate(individual):
+            destination.append(individual)
 
-def create_airports(islands, degree, migration_size, migration_interval):
-    ''' adjacency matrix is given for airport topology '''
+    emmigrations = tuple(tuple(generate_emmigration(neighbor_idx)
+                               for neighbor_idx in neighbors)
+                         for neighbors in topology)
 
-    topology = generate_topology(len(islands), degree)
+    return immigrations, emmigrations
 
-    for island, airport, destination_idxs in izip(islands, airports, topology):
-        airport['destinations'] = [airports[i] for i in destination_idxs]
-        island['airport'] = airport
 
 
 def create(operators, num_islands, population_size=20,
@@ -60,8 +60,7 @@ def get_solution(islands, numiters=1000):
     '''
     for iteration in range(numiters):
         for island in islands:
-            print "iteration =", iteration,
-            print "penalty =", island['best']['penalty']
+            print("iteration = {0}, penalty = {1}".format(iteration, island['best']['penalty']))
             receive_immigration(island)
             ga.steady.iteration(island)
             if island['stats']['born'] % island['airport']['migration_interval'] == 0:

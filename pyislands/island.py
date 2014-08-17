@@ -15,8 +15,8 @@ def send_random_migration(emmigrations, migration_size, population):
     emmigrants = random.sample(population, migration_size)
 
     for emmigrant in emmigrants:
-        migrate = random.choice(emmigrations)
-        migrate(emmigrant)
+        emmigrate = random.choice(emmigrations)
+        emmigrate(emmigrant)
 
 
 def receive_migration(immigrate, population):

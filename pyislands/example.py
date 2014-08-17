@@ -42,7 +42,7 @@ def main(num_cities=100):
 
     solution, penalty = solve_tsp(adjacency_matrix, num_cities)
 
-    print("solution =", solution)
+    print("solution = {0}".format(solution))
 
 
 if __name__ == '__main__':

@@ -31,9 +31,7 @@ def evolution(generate, evolve):
 def simple_info(iteration, population):
     ''' information about current algorithm iteration to stdout '''
     least_penalty, best_genotype = min(population)
-    print("iteration =", iteration)
-    print("penalty =", least_penalty)
-
+    print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
 
 
 def get_solution(evolution, num_iterations, info=None):
