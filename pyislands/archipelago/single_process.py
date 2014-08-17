@@ -25,6 +25,7 @@ def create_migrations(topology):
             while airport:
                 immigrants.append(airport.pop())
             return tuple(immigrants)
+        return immigrate
 
     immigrations = tuple(map(generate_immigration, airports))
 
@@ -32,6 +33,7 @@ def create_migrations(topology):
         destination = airports[idx]
         def emmigrate(individual):
             destination.append(individual)
+        return emmigrate
 
     emmigrations = tuple(tuple(generate_emmigration(neighbor_idx)
                                for neighbor_idx in neighbors)
@@ -53,23 +55,28 @@ def create(operators, num_islands, population_size=20,
     return islands
 
 
-def get_solution(island_evolutions, num_iterations, info=None):
+def get_solution(generate, island_changes, num_iterations, info=None):
     '''
     run synchronous genetic algorithm on all islands
     and get a solution
     '''
 
-    evolutions = [evolution() for evolution in island_evolutions]
+    num_islands = len(island_changes)
 
+    populations = tuple(generate() for _ in range(num_islands))
 
-    for evolution in evolutions:
-        iteration, population = evolution.next()
+    for iteration in range(num_iterations):
+
         if info:
-            info(iteration, population)
+            for population in populations:
+                info(iteration, population)
 
+        populations = [change(iteration, population)
+                       for change in island_changes]
 
-    return min(min(population) for population in islands)
+    penalty, solution = min(min(population) for population in populations)
 
+    return solution, penalty
 
 
 def get_stagnation_solution(islands, max_stagnation=1000):

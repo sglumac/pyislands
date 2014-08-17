@@ -37,9 +37,7 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     return generate, evolve
 
 
-def solve_tsp_classic(adjacency_matrix, num_cities,num_iterations=20000):
-
-    num_iterations = 20000
+def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
 
     generate, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
@@ -49,16 +47,14 @@ def solve_tsp_classic(adjacency_matrix, num_cities,num_iterations=20000):
     return tuple(chain([0], solution, [0])), penalty
 
 
-def solve_tsp_islands(adjacency_matrix, num_cities):
+def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
 
     num_islands = 4
-    num_iterations = 10000
     migration_size = 1
     migration_interval = 200
     degree = 1
 
-    evolutions = (generate_tsp_evolution(adjacency_matrix, num_cities)()
-                  for _ in range(num_islands))
+    generate, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
     ring = topology.generate_regular(num_islands, degree)
 
@@ -70,15 +66,20 @@ def solve_tsp_islands(adjacency_matrix, num_cities):
 
     emmigration_policies = (fcn.partial(island.emmigration_policy_random,
                                         emmigration, migration_size)
-                            for emmigration in immigrations)
+                            for emmigration in emmigrations)
 
-    solution, penalty = archipelago.get_solution(islands, num_iterations,
-                                                 archipelago.simple_info)
+    changes = tuple(fcn.partial(island.change, evolve, immigration_policy,
+                                emmigration_policy, migration_interval)
+                    for immigration_policy, emmigration_policy
+                    in zip(immigration_policies, emmigration_policies))
+
+    solution, penalty = archipelago.get_solution( \
+            generate, changes, num_iterations, ga.simple_info)
 
     return tuple(chain([0], solution, [0])), penalty
 
 
-def main_tsp(num_cities=100, use_islands=None):
+def main_tsp(num_cities=100, use_islands=False):
     cities = tsp.random_cities(num_cities)
     adjacency_matrix = tsp.generate_graph(cities)
 
@@ -91,4 +92,4 @@ def main_tsp(num_cities=100, use_islands=None):
 
 
 if __name__ == '__main__':
-    main_tsp()
+    main_tsp(use_islands=True)

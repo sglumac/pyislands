@@ -30,33 +30,24 @@ def immigration_policy_2tournament(immigrate, population):
 
     new_population = list(population)
 
-    while immigrants:
-        immigrant = immigrants.pop()
+    for immigrant in immigrants:
         _, idxs = ktournament(population, 2)
         bad_idx = idxs[1]
 
-        new_population[bad_idx] = immmigrant
+        new_population[bad_idx] = immigrant
 
     return tuple(new_population)
 
 
-def evolution(generate_population, evolve, immigration_policy,
-              emmigration_policy, migration_interval):
-    '''
-    generator for island during evolution
+def change(evolve, immigration_policy, emmigration_policy, migration_interval,
+           iteration, population):
+    ''' evolve function that changes island population '''
 
-    new_population = generate_population()
-    next_population = evolve(population)
-    '''
+    population = immigration_policy(population)
 
-    population = generate_population()
+    population = evolve(population)
 
-    for iteration in count():
-        yield iteration, population
+    if iteration % migration_interval == 0:
+        emmigration_policy(population)
 
-        population = immigration_policy(population)
-
-        population = evolve(population)
-
-        if iteration % migration_interval == 0:
-            emmigration_policy(population)
+    return population

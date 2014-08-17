@@ -1,7 +1,5 @@
 from pyislands.selection import ktournament
 
-import operator
-
 
 def generate_population(generate, evaluate, num_individuals):
     '''
@@ -18,7 +16,7 @@ def generate_population(generate, evaluate, num_individuals):
 
 def simple_info(iteration, population):
     ''' information about current algorithm iteration to stdout '''
-    least_penalty, best_genotype = min(population)
+    least_penalty, _ = min(population)
     print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
 
 
@@ -27,8 +25,7 @@ def get_solution(generate, evolve, num_iterations, info=None):
 
     population = generate()
     for iteration in range(num_iterations):
-        if info:
-            info(iteration, population)
+        if info: info(iteration, population)
         population = evolve(population)
 
     penalty, solution = min(population)
