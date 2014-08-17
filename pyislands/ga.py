@@ -1,5 +1,6 @@
+from pyislands.selection import ktournament
+
 from itertools import takewhile
-from selection import ktournament
 import operator
 
 
@@ -30,8 +31,8 @@ def evolution(generate, evolve):
 def simple_info(iteration, population):
     ''' information about current algorithm iteration to stdout '''
     least_penalty, best_genotype = min(population)
-    print "iteration =", iteration,
-    print "penalty =", least_penalty
+    print("iteration =", iteration)
+    print("penalty =", least_penalty)
 
 
 

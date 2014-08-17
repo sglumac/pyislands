@@ -1,4 +1,3 @@
-import pyislands.steady as steady
 import pyislands.ga as ga
 from pyislands.permutation.generate import random_permutation
 from pyislands.permutation.mutation import reversed_sequence_mutation
@@ -10,21 +9,20 @@ import random
 from itertools import chain
 
 
-def solve_tsp(adjacency_matrix, num_cities):
+def solve_tsp(adjacency_matrix, num_cities, num_iterations=20000):
 
     def evaluate(genotype):
         return tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
 
     def generate():
-        genotype = range(1, num_cities)
+        genotype = list(range(1, num_cities))
         random.shuffle(genotype)
-        return genotype
+        return tuple(genotype)
 
     mutate = fcn.partial(reversed_sequence_mutation, 0.8)
     crossover = partially_mapped_crossover
 
     population_size = 10
-    num_iterations = 20000
 
     generate = fcn.partial(ga.generate_population, generate,
                            evaluate, population_size)
@@ -44,7 +42,7 @@ def main(num_cities=100):
 
     solution, penalty = solve_tsp(adjacency_matrix, num_cities)
 
-    print "solution =", solution
+    print("solution =", solution)
 
 
 if __name__ == '__main__':
