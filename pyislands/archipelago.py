@@ -1,5 +1,6 @@
 '''
-Synchronous Island creation for testing on a single computer
+Synchronous Island creation for testing on a single computer,
+this module connects island abstraction
 '''
 import ga
 from ga.selection import ktournament
@@ -7,7 +8,7 @@ from ga.utility import replace, check_best
 
 import random
 from operator import itemgetter
-from itertools import izip, imap
+
 
 
 def generate_topology(num_islands, degree):
@@ -16,50 +17,28 @@ def generate_topology(num_islands, degree):
     given degree of each vertex/island. This function is used
     for creating migration topology, return its adjacency list.
     '''
-    island_ids = range(num_islands)
-    neighbors = [island_ids[-i:] + island_ids[:-i]
-                 for i in range(degree, 0, -1)]
+    idxs = list(range(num_islands))
+    neighbors = [idxs[-i:] + idxs[:-i] for i in range(degree, 0, -1)]
 
-    return list(izip(*neighbors))
+    return list(zip(*neighbors))
+
+
+def create_migrations():
+    '''
+    create functions used for transferring individuals from
+    one islands to another, creates tuple of tuplles
+    '''
+    pass
 
 
 def create_airports(islands, degree, migration_size, migration_interval):
     ''' adjacency matrix is given for airport topology '''
-
-    airports = [{'migration_size': migration_size,
-                 'migration_interval': migration_interval,
-                 'individuals': list()}
-                for _ in islands]
 
     topology = generate_topology(len(islands), degree)
 
     for island, airport, destination_idxs in izip(islands, airports, topology):
         airport['destinations'] = [airports[i] for i in destination_idxs]
         island['airport'] = airport
-
-
-def receive_immigration(island):
-    ''' immigration policy of some population '''
-    population = island['population']
-    immigrants = island['airport']['individuals']
-    while immigrants:
-        immigrant = immigrants.pop()
-        _, bad = ktournament(population, 2)
-        replace(bad, immigrant)
-        check_best(island, immigrant)
-
-
-def send_emmigration(island):
-    '''
-    randomly choses individuals for emmigration, its up to
-    the programmer to schedule the migration interval
-    '''
-    population = island['population']
-    destinations = island['airport']['destinations']
-    emmigrants = random.sample(population, island['airport']['migration_size'])
-    for emmigrant in emmigrants:
-        destination = random.choice(destinations)
-        destination['individuals'].append(emmigrant)
 
 
 def create(operators, num_islands, population_size=20,
@@ -88,8 +67,7 @@ def get_solution(islands, numiters=1000):
             if island['stats']['born'] % island['airport']['migration_interval'] == 0:
                 send_emmigration(island)
 
-    return min((island['best'] for island in islands),
-               key=itemgetter('penalty'))
+    return min(min(population) for population in islands)
 
 
 def get_stagnation_solution(islands, max_stagnation=1000):
@@ -112,5 +90,4 @@ def get_stagnation_solution(islands, max_stagnation=1000):
                 penalty = next_penalty
                 stagnation = 0
 
-    return min((island['best'] for island in islands),
-               key=itemgetter('penalty'))
+    return min(min(population) for population in islands)
