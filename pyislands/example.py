@@ -43,9 +43,7 @@ def solve_tsp_classic(adjacency_matrix, num_cities,num_iterations=20000):
 
     generate, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
-    evolution = fcn.partial(generate, evolve, generate, evolve)
-
-    solution, penalty = ga.get_solution(evolution, num_iterations,
+    solution, penalty = ga.get_solution(generate, evolve, num_iterations,
                                         ga.simple_info)
 
     return tuple(chain([0], solution, [0])), penalty
