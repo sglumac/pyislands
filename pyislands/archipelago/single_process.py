@@ -3,7 +3,9 @@ Synchronous Island creation for testing on a single computer,
 this module connects populations/islands using simple queues/lists.
 '''
 import random
-from operator import itemgetter
+from operator import itemgetter, gt
+from itertools import takewhile, count
+import functools as fcn
 
 
 def create_migrations(topology):
@@ -42,7 +44,6 @@ def create_migrations(topology):
     return immigrations, emmigrations
 
 
-
 def create(operators, num_islands, population_size=20,
            degree=1, migration_size=1, migration_interval=200):
     ''' create archipelago, defaults to ring topology (degree=1) '''
@@ -55,7 +56,7 @@ def create(operators, num_islands, population_size=20,
     return islands
 
 
-def get_solution(generate, island_changes, num_iterations, info=None):
+def generate_solution(generate, island_changes, running, info):
     '''
     run synchronous genetic algorithm on all islands
     and get a solution
@@ -65,8 +66,7 @@ def get_solution(generate, island_changes, num_iterations, info=None):
 
     populations = tuple(generate() for _ in range(num_islands))
 
-    for iteration in range(num_iterations):
-
+    for iteration in takewhile(running, count()):
         if info:
             for population in populations:
                 info(iteration, population)
@@ -77,6 +77,17 @@ def get_solution(generate, island_changes, num_iterations, info=None):
     penalty, solution = min(min(population) for population in populations)
 
     return solution, penalty
+
+
+def get_solution(generate, island_changes, num_iterations, info=None):
+    '''
+    run synchronous genetic algorithm on all islands
+    and get a solution
+    '''
+
+    running = fcn.partial(gt, num_iterations)
+
+    return generate_solution(generate, island_changes, running, info)
 
 
 def get_stagnation_solution(islands, max_stagnation=1000):
