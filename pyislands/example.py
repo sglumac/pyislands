@@ -10,7 +10,7 @@ import pyislands.permutation.tsp as tsp
 
 import functools as fcn
 import random
-from itertools import chain
+from itertools import chain, takewhile
 
 
 def generate_tsp_evolution(adjacency_matrix, num_cities):
@@ -30,24 +30,47 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
 
     crossover = partially_mapped_crossover
 
-    generate = fcn.partial(ga.generate_population, generate,
+    create = fcn.partial(ga.create_population, generate,
                            evaluate, population_size)
     evolve = fcn.partial(ga.steady_evolve, crossover, mutate, evaluate)
 
-    return generate, evolve
+    return create, evolve
+
+
+def simple_info(iteration, population):
+    least_penalty, _ = min(population)
+    print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
 
 
 def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
+    '''
+    This functions runs a simple genetic algorithm which evolves a solution of
+    Travelling Salesman Problem.
+    '''
 
-    generate, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+# Simple Genetic Algorithm
+    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    evolution = ga.evolution(create, evolve)
 
-    solution, penalty = ga.get_solution(generate, evolve, num_iterations,
-                                        ga.simple_info)
+# Main Loop
+    for iteration, population in enumerate(evolution):
+        least_penalty, _ = min(population)
+        print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
+
+# Termination Condition
+        if iteration >= num_iterations:
+            break
+
+    penalty, solution = min(population)
 
     return tuple(chain([0], solution, [0])), penalty
 
 
 def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
+    '''
+    This functions runs an island genetic algorithm which evolves a solution of
+    Travelling Salesman Problem.
+    '''
 
     num_islands = 4
     migration_size = 1
@@ -74,7 +97,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
                     in zip(immigration_policies, emmigration_policies))
 
     solution, penalty = archipelago.get_solution( \
-            generate, changes, num_iterations, ga.simple_info)
+            generate, changes, num_iterations, simple_info)
 
     return tuple(chain([0], solution, [0])), penalty
 
