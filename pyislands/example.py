@@ -1,19 +1,29 @@
+'''
+This module contains examples of solving a random travelling salesman
+problem using pyislands.
+'''
 from pyislands import ga
 from pyislands import island
 from pyislands.archipelago import topology
 import pyislands.archipelago.single_process as archipelago
 
-from pyislands.permutation.generate import random_permutation
 from pyislands.permutation.mutation import reversed_sequence_mutation
 from pyislands.permutation.crossover import partially_mapped_crossover
 import pyislands.permutation.tsp as tsp
 
+from pyislands.investigations import iteration_investigate
+
 import functools as fcn
 import random
-from itertools import chain, takewhile
+from itertools import chain
 
 
 def generate_tsp_evolution(adjacency_matrix, num_cities):
+    '''
+    This function defines algorithm used for solving a travelling salesman
+    problem. Algorithm parameters are hardcoded into this function, it is just
+    an example.
+    '''
 
     population_size = 10
     mutation_probability = 0.8
@@ -31,8 +41,9 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     crossover = partially_mapped_crossover
 
     create = fcn.partial(ga.create_population, generate,
-                           evaluate, population_size)
-    evolve = fcn.partial(ga.steady_evolve, crossover, mutate, evaluate)
+                         evaluate, population_size)
+
+    evolve = ga.get_steady_evolve(crossover, mutate, evaluate)
 
     return create, evolve
 
@@ -45,17 +56,19 @@ def simple_info(iteration, population):
 def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     '''
     This functions runs a simple genetic algorithm which evolves a solution of
-    Travelling Salesman Problem.
+    a travelling salesman problem. It shows how to print out simple diagnostic
+    for population.
     '''
 
 # Simple Genetic Algorithm
     create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
-    evolution = ga.evolution(create, evolve)
+    evolution = ga.evolution(create, evolve, iteration_investigate)
 
 # Main Loop
-    for iteration, population in enumerate(evolution):
+    for iteration, (population, info) in enumerate(evolution):
         least_penalty, _ = min(population)
-        print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
+        print("iteration = {0}, penalty = {1}".
+              format(iteration, least_penalty))
 
 # Termination Condition
         if iteration >= num_iterations:
@@ -69,7 +82,8 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
 def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
     '''
     This functions runs an island genetic algorithm which evolves a solution of
-    Travelling Salesman Problem.
+    a travelling salesman problem. It shows how to print out simple diagnostic
+    for population.
     '''
 
     num_islands = 4
@@ -96,13 +110,17 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
                     for immigration_policy, emmigration_policy
                     in zip(immigration_policies, emmigration_policies))
 
-    solution, penalty = archipelago.get_solution( \
-            generate, changes, num_iterations, simple_info)
+    solution, penalty = \
+        archipelago.get_solution(generate, changes, num_iterations, simple_info)
 
     return tuple(chain([0], solution, [0])), penalty
 
 
 def main_tsp(num_cities=100, use_islands=False):
+    '''
+    This functions creates a random travelling salesman problem and
+    solves it using classical or island model genetic algorithm.
+    '''
     cities = tsp.random_cities(num_cities)
     adjacency_matrix = tsp.generate_graph(cities)
 
@@ -112,6 +130,7 @@ def main_tsp(num_cities=100, use_islands=False):
         solution, penalty = solve_tsp_classic(adjacency_matrix, num_cities)
 
     print("solution = {0}".format(solution))
+    print("penalty = {0}".format(penalty))
 
 
 if __name__ == '__main__':

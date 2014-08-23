@@ -56,6 +56,30 @@ def create(operators, num_islands, population_size=20,
     return islands
 
 
+def evolution(create, evolve, immigration_policies, emmigration_policies):
+    '''
+    This is a Python generate which yields tuple of populations inhabiting
+    abstract islands.
+    '''
+    num_islands = len(immigration_policies)
+
+    islands = tuple(generate() for _ in range(num_islands))
+
+    for iteration in count():
+        yield islands
+
+# Immigration - Outside individuals are inhabiting an island
+        islands = (immigrate(population) for population, immigrate
+                   in zip(islands, immigration_policies))
+
+# Evolution - Each island population is evolved into the next generation
+        islands = tuple(evolve(population) for population in islands)
+
+# Emmigration - Sends individuals (clones) from one population onto voyage
+        for population, migrate in zip(islands, emmigration_policies):
+            migrate(population)
+
+
 def generate_solution(generate, island_changes, running, info):
     '''
     run synchronous genetic algorithm on all islands
@@ -64,7 +88,6 @@ def generate_solution(generate, island_changes, running, info):
 
     num_islands = len(island_changes)
 
-    populations = tuple(generate() for _ in range(num_islands))
 
     for iteration in takewhile(running, count()):
         if info:
