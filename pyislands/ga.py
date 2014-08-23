@@ -1,10 +1,14 @@
+'''
+module describing simple genetic algorithm
+'''
 from pyislands.selection import ktournament
+
+from itertools import count
 
 
 def generate_population(generate, evaluate, num_individuals):
-    '''
-    generates num_individuals in population
-    '''
+    ''' generates num_individuals in population '''
+
     genotypes = (generate() for _ in range(num_individuals))
 
     create_individual = lambda genotype: (evaluate(genotype), genotype)
@@ -16,6 +20,7 @@ def generate_population(generate, evaluate, num_individuals):
 
 def simple_info(iteration, population):
     ''' information about current algorithm iteration to stdout '''
+
     least_penalty, _ = min(population)
     print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
 
@@ -25,12 +30,33 @@ def get_solution(generate, evolve, num_iterations, info=None):
 
     population = generate()
     for iteration in range(num_iterations):
-        if info: info(iteration, population)
+        if info:
+            info(iteration, population)
         population = evolve(population)
 
     penalty, solution = min(population)
 
     return solution, penalty
+
+
+def evolution(create, evolve):
+    '''
+    Infinite generator for evolution of some population.
+    This generator returns (iteration, population):
+        iteration - generation
+        population - tuple together containing tuples/individuals
+
+    population_0 = create()
+    population_1 = evolve(population_0)
+    ...
+    population_k-1 = evolve(population_k-1)
+    ...
+    '''
+
+    population = create()
+    for iteration in count():
+        yield iteration, population
+        population = evolve(population)
 
 
 def steady_evolve(crossover, mutate, evaluate, population):
