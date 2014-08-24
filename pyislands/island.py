@@ -37,17 +37,3 @@ def immigration_policy_2tournament(immigrate, population):
         new_population[bad_idx] = immigrant
 
     return tuple(new_population)
-
-
-def change(evolve, immigration_policy, emmigration_policy, migration_interval,
-           iteration, population):
-    ''' evolve function that changes island population '''
-
-    population = immigration_policy(population)
-
-    population = evolve(population)
-
-    if iteration % migration_interval == 0:
-        emmigration_policy(population)
-
-    return population

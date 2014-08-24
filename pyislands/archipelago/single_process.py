@@ -63,7 +63,7 @@ def evolution(create, evolve, immigration_policies, emmigration_policies):
     '''
     num_islands = len(immigration_policies)
 
-    islands = tuple(generate() for _ in range(num_islands))
+    islands = tuple(create() for _ in range(num_islands))
 
     for iteration in count():
         yield islands
@@ -73,64 +73,8 @@ def evolution(create, evolve, immigration_policies, emmigration_policies):
                    in zip(islands, immigration_policies))
 
 # Evolution - Each island population is evolved into the next generation
-        islands = tuple(evolve(population) for population in islands)
+        islands = tuple(evolve(population, None) for population in islands)
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
         for population, migrate in zip(islands, emmigration_policies):
             migrate(population)
-
-
-def generate_solution(generate, island_changes, running, info):
-    '''
-    run synchronous genetic algorithm on all islands
-    and get a solution
-    '''
-
-    num_islands = len(island_changes)
-
-
-    for iteration in takewhile(running, count()):
-        if info:
-            for population in populations:
-                info(iteration, population)
-
-        populations = [change(iteration, population)
-                       for change in island_changes]
-
-    penalty, solution = min(min(population) for population in populations)
-
-    return solution, penalty
-
-
-def get_solution(generate, island_changes, num_iterations, info=None):
-    '''
-    run synchronous genetic algorithm on all islands
-    and get a solution
-    '''
-
-    running = fcn.partial(gt, num_iterations)
-
-    return generate_solution(generate, island_changes, running, info)
-
-
-def get_stagnation_solution(islands, max_stagnation=1000):
-    '''
-    run synchronous genetic algorithm on all islands
-    and get a solution
-    '''
-    stagnation = 0
-    penalty = float('inf')
-    while stagnation < max_stagnation:
-        stagnation += 1
-        for island in islands:
-            receive_immigration(island)
-            ga.steady.iteration(island)
-            if island['stats']['born'] % island['airport']['migration_interval'] == 0:
-                send_emmigration(island)
-
-            next_penalty = min(island['best']['penalty'] for island in islands)
-            if next_penalty < penalty:
-                penalty = next_penalty
-                stagnation = 0
-
-    return min(min(population) for population in islands)

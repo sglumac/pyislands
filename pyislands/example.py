@@ -91,27 +91,36 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
     migration_interval = 200
     degree = 1
 
-    generate, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+# Simple Genetic Algorithm
+    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
+# Ring Topology
     ring = topology.generate_regular(num_islands, degree)
 
+# Migration Setup
     immigrations, emmigrations = archipelago.create_migrations(ring)
 
-    immigration_policies = (fcn.partial(island.immigration_policy_2tournament,
-                                        immigrate)
-                            for immigrate in immigrations)
+    immigration_policies = \
+        tuple(fcn.partial(island.immigration_policy_2tournament, immigrate)
+             for immigrate in immigrations)
 
-    emmigration_policies = (fcn.partial(island.emmigration_policy_random,
-                                        emmigration, migration_size)
-                            for emmigration in emmigrations)
+    emmigration_policies = \
+        tuple(fcn.partial(island.emmigration_policy_random, emmigration, migration_size)
+              for emmigration in emmigrations)
 
-    changes = tuple(fcn.partial(island.change, evolve, immigration_policy,
-                                emmigration_policy, migration_interval)
-                    for immigration_policy, emmigration_policy
-                    in zip(immigration_policies, emmigration_policies))
+    evolution = archipelago.evolution(create, evolve, immigration_policies,
+                                      emmigration_policies)
 
-    solution, penalty = \
-        archipelago.get_solution(generate, changes, num_iterations, simple_info)
+# Main Loop
+    for iteration, islands in enumerate(evolution):
+        least_penalty, _ = min(map(min, islands))
+        print("iteration = {0}, penalty = {1}".
+              format(iteration, least_penalty))
+# Termination Condition
+        if iteration >= num_iterations:
+            break
+
+    penalty, solution = min(map(min, islands))
 
     return tuple(chain([0], solution, [0])), penalty
 

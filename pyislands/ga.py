@@ -61,6 +61,10 @@ def get_steady_evolve(crossover, mutate, evaluate):
     '''
 
     def steady_evolve(population, dummy):
+        '''
+        This function uses crossover, mutate and evalute, functions
+        passed as arguments to get_steady_evolve.
+        '''
 
 # Selection = 3-Tournament
         individuals, idxs = ktournament(population, 3)
