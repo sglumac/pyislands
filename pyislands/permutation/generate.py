@@ -1,11 +1,23 @@
-from random import shuffle
+import random
 
-def random_permutation(num_elements):
-    ''' generates random permutation, e.g. (0, n-1, 3, ..., 1, n - 1) '''
-    tmp = list(range(num_elements))
-    shuffle(tmp)
+def get_random_permutation_generator(elements):
+    '''
+    Generates closure around elements = (x_0, x_1, x_2, ..., x_n-1). This
+    closure returns random permutation of this elements,
+    e.g. (x_0, x_n-1, x_3, ..., x_2, x_n - 1)
+    '''
 
-    return tuple(tmp)
+    generator_elements = list(elements)
+
+    def random_permutation_generator():
+        ''' Closure which returns permutation of generator_elements '''
+
+        random.shuffle(generator_elements)
+
+        return tuple(generator_elements)
+
+    return random_permutation_generator
+
 
 def unit(num_elements):
     ''' generates unit permutation, (0, 1, 2, ..., n - 1) '''

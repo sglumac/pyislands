@@ -92,11 +92,11 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
     immigrations, emmigrations = archipelago.create_migrations(ring)
 
     immigration_policies = \
-        tuple(fcn.partial(island.immigration_policy_2tournament, immigrate)
-             for immigrate in immigrations)
+        tuple(island.get_2tournament_immigration_policy(immigrate)
+              for immigrate in immigrations)
 
     emmigration_policies = \
-        tuple(fcn.partial(island.emmigration_policy_random, emmigration, migration_size)
+        tuple(island.get_random_emmigration_policy(emmigration, migration_size)
               for emmigration in emmigrations)
 
     evolution = archipelago.evolution(evolve, immigration_policies, emmigration_policies)

@@ -2,10 +2,6 @@
 Synchronous Island creation for testing on a single computer,
 this module connects populations/islands using simple queues/lists.
 '''
-import random
-from operator import itemgetter, gt
-from itertools import takewhile, count
-import functools as fcn
 
 
 def create_migrations(topology):
@@ -44,18 +40,6 @@ def create_migrations(topology):
     return immigrations, emmigrations
 
 
-def create(operators, num_islands, population_size=20,
-           degree=1, migration_size=1, migration_interval=200):
-    ''' create archipelago, defaults to ring topology (degree=1) '''
-
-    islands = [ga.island.create(operators, population_size)
-               for _ in range(num_islands)]
-
-    create_airports(islands, degree, migration_size, migration_interval)
-
-    return islands
-
-
 def evolution(evolve, immigration_policies, emmigration_policies):
     '''
     This is a Python generate which yields tuple of populations inhabiting
@@ -65,15 +49,15 @@ def evolution(evolve, immigration_policies, emmigration_policies):
 
     islands = tuple(evolve() for _ in range(num_islands))
 
-    for iteration in count():
+    while True:
         yield islands
 
 # Immigration - Outside individuals are inhabiting an island
-        islands = (immigrate(population) for (population, _), immigrate
-                   in zip(islands, immigration_policies))
+        islands = ((immigrate(population, info) for (population, info), immigrate
+                   in zip(islands, immigration_policies)))
 
 # Evolution - Each island population is evolved into the next generation
-        islands = tuple(map(evolve, islands))
+        islands = tuple(evolve(population, info) for population, info in islands)
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
         for (population, _), migrate in zip(islands, emmigration_policies):
