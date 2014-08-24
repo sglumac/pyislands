@@ -56,25 +56,25 @@ def create(operators, num_islands, population_size=20,
     return islands
 
 
-def evolution(create, evolve, immigration_policies, emmigration_policies):
+def evolution(evolve, immigration_policies, emmigration_policies):
     '''
     This is a Python generate which yields tuple of populations inhabiting
     abstract islands.
     '''
     num_islands = len(immigration_policies)
 
-    islands = tuple(create() for _ in range(num_islands))
+    islands = tuple(evolve() for _ in range(num_islands))
 
     for iteration in count():
         yield islands
 
 # Immigration - Outside individuals are inhabiting an island
-        islands = (immigrate(population) for population, immigrate
+        islands = (immigrate(population) for (population, _), immigrate
                    in zip(islands, immigration_policies))
 
 # Evolution - Each island population is evolved into the next generation
-        islands = tuple(evolve(population, None) for population in islands)
+        islands = tuple(map(evolve, islands))
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
-        for population, migrate in zip(islands, emmigration_policies):
+        for (population, _), migrate in zip(islands, emmigration_policies):
             migrate(population)

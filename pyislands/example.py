@@ -11,8 +11,6 @@ from pyislands.permutation.mutation import reversed_sequence_mutation
 from pyislands.permutation.crossover import partially_mapped_crossover
 import pyislands.permutation.tsp as tsp
 
-from pyislands.investigations import iteration_investigate
-
 import functools as fcn
 import random
 from itertools import chain
@@ -40,17 +38,10 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
 
     crossover = partially_mapped_crossover
 
-    create = fcn.partial(ga.create_population, generate,
-                         evaluate, population_size)
+    evolve = ga.get_steady_evolve(generate, crossover, mutate,
+                                  evaluate, population_size)
 
-    evolve = ga.get_steady_evolve(crossover, mutate, evaluate)
-
-    return create, evolve
-
-
-def simple_info(iteration, population):
-    least_penalty, _ = min(population)
-    print("iteration = {0}, penalty = {1}".format(iteration, least_penalty))
+    return evolve
 
 
 def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
@@ -61,8 +52,8 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     '''
 
 # Simple Genetic Algorithm
-    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
-    evolution = ga.evolution(create, evolve, iteration_investigate)
+    evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    evolution = ga.evolution(evolve)
 
 # Main Loop
     for iteration, (population, info) in enumerate(evolution):
@@ -92,7 +83,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
     degree = 1
 
 # Simple Genetic Algorithm
-    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
 # Ring Topology
     ring = topology.generate_regular(num_islands, degree)
@@ -108,20 +99,20 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
         tuple(fcn.partial(island.emmigration_policy_random, emmigration, migration_size)
               for emmigration in emmigrations)
 
-    evolution = archipelago.evolution(create, evolve, immigration_policies,
-                                      emmigration_policies)
+    evolution = archipelago.evolution(evolve, immigration_policies, emmigration_policies)
 
 # Main Loop
     for iteration, islands in enumerate(evolution):
-        least_penalty, _ = min(map(min, islands))
+        best_individuals = map(min, (population for population, info
+                                     in islands))
+        least_penalty, _ = min(best_individuals)
         print("iteration = {0}, penalty = {1}".
               format(iteration, least_penalty))
 # Termination Condition
         if iteration >= num_iterations:
             break
 
-    penalty, solution = min(map(min, islands))
-
+    penalty, solution = min(map(min, (population for population, _ in islands)))
     return tuple(chain([0], solution, [0])), penalty
 
 

@@ -4,19 +4,7 @@ module describing simple genetic algorithm
 from pyislands.selection import ktournament
 
 
-def create_population(generate, evaluate, num_individuals):
-    ''' generates num_individuals in population '''
-
-    genotypes = (generate() for _ in range(num_individuals))
-
-    create_individual = lambda genotype: (evaluate(genotype), genotype)
-
-    population = tuple(map(create_individual, genotypes))
-
-    return population
-
-
-def evolution(create, evolve, investigate):
+def evolution(evolve):
     '''
     Infinite generator for evolution of some population.
     This generator yields (population, info):
@@ -43,15 +31,13 @@ def evolution(create, evolve, investigate):
     influenced by outside functions. Population can be used only to gather
     statistics
     '''
-    population = create()
-    info = investigate(population)
+    population, info = evolve()
     while True:
         yield population, info
         population = evolve(population, info)
-        info = investigate(population, info)
 
 
-def get_steady_evolve(crossover, mutate, evaluate):
+def get_steady_evolve(generate, crossover, mutate, evaluate, population_size):
     '''
     Returns closure evolve:
         evolve - uses crossover, mutate and evaluate to evolve some population
@@ -60,11 +46,26 @@ def get_steady_evolve(crossover, mutate, evaluate):
     population_k = evolve(population_k-1)
     '''
 
-    def steady_evolve(population, dummy):
+    def create_population():
+        '''
+        This function is used in steady_evolve to create an initial
+        population.
+        '''
+        genotypes = tuple(generate() for _ in range(population_size))
+        penalties = map(evaluate, genotypes)
+        population = tuple(zip(penalties, genotypes))
+
+        return population, None
+
+    def steady_evolve(population=None, info=None):
         '''
         This function uses crossover, mutate and evalute, functions
         passed as arguments to get_steady_evolve.
         '''
+
+# Initial Population
+        if not population:
+            return create_population()
 
 # Selection = 3-Tournament
         individuals, idxs = ktournament(population, 3)
@@ -86,6 +87,6 @@ def get_steady_evolve(crossover, mutate, evaluate):
         new_population = list(population)
         new_population[bad_idx] = child
 
-        return tuple(new_population)
+        return tuple(new_population), info
 
     return steady_evolve
