@@ -34,7 +34,7 @@ def evolution(evolve):
     population, info = evolve()
     while True:
         yield population, info
-        population = evolve(population, info)
+        population, info = evolve(population, info)
 
 
 def get_steady_evolve(generate, crossover, mutate, evaluate, population_size):
