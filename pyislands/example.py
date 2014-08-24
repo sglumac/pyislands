@@ -7,12 +7,11 @@ from pyislands import island
 from pyislands.archipelago import topology
 import pyislands.archipelago.single_process as archipelago
 
+from pyislands.permutation.generate import get_random_permutation_generator
 from pyislands.permutation.mutation import get_reversed_sequence_mutation
 from pyislands.permutation.crossover import partially_mapped_crossover
 import pyislands.permutation.tsp as tsp
 
-import functools as fcn
-import random
 from itertools import chain
 
 
@@ -29,10 +28,8 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     def evaluate(genotype):
         return tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
 
-    def generate():
-        genotype = list(range(1, num_cities))
-        random.shuffle(genotype)
-        return tuple(genotype)
+    elements = list(range(1, num_cities))
+    generate = get_random_permutation_generator(elements)
 
     mutate = get_reversed_sequence_mutation(mutation_probability)
 
@@ -56,7 +53,7 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     evolution = ga.evolution(evolve)
 
 # Main Loop
-    for iteration, (population, info) in enumerate(evolution):
+    for iteration, (population, dummy) in enumerate(evolution):
         least_penalty, _ = min(population)
         print("iteration = {0}, penalty = {1}".
               format(iteration, least_penalty))

@@ -4,6 +4,7 @@ from pyislands.permutation.mutation import get2_every_city_mutation
 
 
 def check_mutation(mutation):
+    ''' This function asserts containing elements in permutation mutation '''
     genotype = range(10)
 
     new_genotype = mutation(genotype)
