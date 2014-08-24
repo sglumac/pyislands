@@ -2,16 +2,18 @@
 Synchronous Island creation for testing on a single computer,
 this module connects populations/islands using simple queues/lists.
 '''
+from pyislands.archipelago import topology
 
 
-def create_migrations(topology):
+def create_migrations(num_islands, degree):
     '''
     Create functions used for transferring individuals from
     one islands to another, creates tuple of tuples.
 
     topology - directed graph representing connections between islands
     '''
-    num_islands = len(topology)
+
+    migration_graph = topology.generate_regular(num_islands, degree)
 
 # an airport receives individuals, it's a traffic stop for an islands
 # for single process implementation, an airport is a simple list
@@ -35,7 +37,7 @@ def create_migrations(topology):
 
     emmigrations = tuple(tuple(generate_emmigration(neighbor_idx)
                                for neighbor_idx in neighbors)
-                         for neighbors in topology)
+                         for neighbors in migration_graph)
 
     return immigrations, emmigrations
 

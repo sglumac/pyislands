@@ -25,8 +25,8 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     population_size = 10
     mutation_probability = 0.8
 
-    def evaluate(genotype):
-        return tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
+    evaluate = lambda genotype: \
+        tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
 
     elements = list(range(1, num_cities))
     generate = get_random_permutation_generator(elements)
@@ -82,11 +82,9 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
 # Simple Genetic Algorithm
     evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
-# Ring Topology
-    ring = topology.generate_regular(num_islands, degree)
-
 # Migration Setup
-    immigrations, emmigrations = archipelago.create_migrations(ring)
+    immigrations, emmigrations = \
+        archipelago.create_migrations(num_islands, degree)
 
     immigration_policies = \
         tuple(island.get_2tournament_immigration_policy(immigrate)
