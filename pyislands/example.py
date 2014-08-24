@@ -7,7 +7,7 @@ from pyislands import island
 from pyislands.archipelago import topology
 import pyislands.archipelago.single_process as archipelago
 
-from pyislands.permutation.mutation import reversed_sequence_mutation
+from pyislands.permutation.mutation import get_reversed_sequence_mutation
 from pyislands.permutation.crossover import partially_mapped_crossover
 import pyislands.permutation.tsp as tsp
 
@@ -34,7 +34,7 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
         random.shuffle(genotype)
         return tuple(genotype)
 
-    mutate = fcn.partial(reversed_sequence_mutation, mutation_probability)
+    mutate = get_reversed_sequence_mutation(mutation_probability)
 
     crossover = partially_mapped_crossover
 

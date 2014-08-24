@@ -1,8 +1,6 @@
-from pyislands.permutation.mutation import reversed_sequence_mutation
-from pyislands.permutation.mutation import every_city_mutation
-from pyislands.permutation.mutation import every_city_mutation2
-
-from functools import partial
+from pyislands.permutation.mutation import get_reversed_sequence_mutation
+from pyislands.permutation.mutation import get_every_city_mutation
+from pyislands.permutation.mutation import get2_every_city_mutation
 
 
 def check_mutation(mutation):
@@ -15,12 +13,12 @@ def check_mutation(mutation):
 
 
 def test_rsm():
-    check_mutation(partial(reversed_sequence_mutation, 1.0))
+    check_mutation(get_reversed_sequence_mutation(1.0))
 
 
 def test_ecm():
-    check_mutation(partial(every_city_mutation, 1.0))
+    check_mutation(get_every_city_mutation(1.0))
 
 
 def test_ecm2():
-    check_mutation(partial(every_city_mutation2, 1.0))
+    check_mutation(get2_every_city_mutation(1.0))
