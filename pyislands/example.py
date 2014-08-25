@@ -5,7 +5,7 @@ problem using pyislands.
 from pyislands import ga
 from pyislands import island
 from pyislands.archipelago import topology
-import pyislands.archipelago.single_process as archipelago
+import pyislands.archipelago.nonparallel as archipelago
 
 from pyislands.permutation.generate import get_random_permutation_generator
 from pyislands.permutation.mutation import get_reversed_sequence_mutation

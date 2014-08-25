@@ -7,4 +7,4 @@ Islands in archipelago is presented with its integer id.
 '''
 
 import pyislands.archipelago.topology
-import pyislands.archipelago.single_process
+import pyislands.archipelago.nonparallel
