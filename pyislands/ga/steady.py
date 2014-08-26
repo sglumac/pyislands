@@ -3,6 +3,8 @@ module describing simple genetic algorithm
 '''
 from pyislands.selection import ktournament
 
+import functools as fcn
+
 
 def evolution(evolve):
     '''
@@ -46,57 +48,67 @@ def get_steady_evolve(generate, crossover, mutate, evaluate, population_size):
     population_k = evolve(population_k-1)
     '''
 
-    def create_population():
-        '''
-        This function is used in steady_evolve to create an initial
-        population.
-        '''
-        genotypes = tuple(generate() for _ in range(population_size))
-        penalties = map(evaluate, genotypes)
-        population = tuple(zip(penalties, genotypes))
+    evolve = fcn.partial(steady_evolve, generate, crossover, mutate, evaluate,
+            population_size)
 
-        info = (('individuals', population_size),
-                ('evaluations', population_size))
+    return evolve
 
-        return population, info
 
+def create_population(generate, evaluate, population_size):
+    '''
+    This function is used in steady_evolve to create an initial
+    population.
+    '''
+    genotypes = tuple(generate() for _ in range(population_size))
+    penalties = map(evaluate, genotypes)
+    population = tuple(zip(penalties, genotypes))
+
+    info = (('individuals', population_size),
+            ('evaluations', population_size))
+
+    return population, info
+
+
+def update_info(info):
+    ''' evolution of information '''
 # This dictionary determines information update (specific for this function)
 # evals = 2 for comparing crossover children, 1 after mutation
     info_dict = {'individuals': lambda n: n + 1,
                  'evaluations': lambda n: n + 3}
 
-    update_info = lambda info: tuple(((k, info_dict[k](v)) for k, v in info))
+    new_info = tuple(((k, info_dict[k](v)) for k, v in info))
 
-    def steady_evolve(population=None, info=None):
-        '''
-        This function uses crossover, mutate and evalute, functions
-        passed as arguments to get_steady_evolve.
-        '''
+    return new_info
+
+
+def steady_evolve(generate, crossover, mutate, evaluate, population_size, population=None, info=None):
+    '''
+    This function uses crossover, mutate and evalute, functions
+    passed as arguments to get_steady_evolve.
+    '''
 
 # Initial Population
-        if not population:
-            return create_population()
+    if not population:
+        return create_population(generate, evaluate, population_size)
 
 # Selection = 3-Tournament
-        individuals, idxs = ktournament(population, 3)
-        parents = individuals[0:2]
-        bad_idx = idxs[2]
+    individuals, idxs = ktournament(population, 3)
+    parents = individuals[0:2]
+    bad_idx = idxs[2]
 
 # Crossover
-        genotype1, genotype2 = (genotype for _, genotype in parents)
-        children_genotypes = crossover(genotype1, genotype2)
-        best_genotype = min(children_genotypes, key=evaluate)
+    genotype1, genotype2 = (genotype for _, genotype in parents)
+    children_genotypes = crossover(genotype1, genotype2)
+    best_genotype = min(children_genotypes, key=evaluate)
 
 # Mutation
-        new_genotype = mutate(best_genotype)
-        penalty = evaluate(new_genotype)
+    new_genotype = mutate(best_genotype)
+    penalty = evaluate(new_genotype)
 
-        child = (penalty, new_genotype)
+    child = (penalty, new_genotype)
 
 # Replace bad individual
-        new_population = list(population)
-        new_population[bad_idx] = child
+    new_population = list(population)
+    new_population[bad_idx] = child
 
-        return tuple(new_population), update_info(info)
-
-    return steady_evolve
+    return tuple(new_population), update_info(info)
