@@ -8,6 +8,7 @@ with signature:
 
 '''
 import random
+import functools as fcn
 
 
 def get_reversed_sequence_mutation(mutation_probability):
@@ -16,17 +17,18 @@ def get_reversed_sequence_mutation(mutation_probability):
     probability (1 - mutation_probability)
     '''
 
-    def reversed_sequence_mutation(genotype):
-        new_genotype = list(genotype)
+    return fcn.partial(reversed_sequence_mutation, mutation_probability)
 
-        if random.random() < mutation_probability:
-            num_genes = len(genotype)
-            break1, break2 = sorted(random.sample(range(num_genes + 1), 2))
-            new_genotype[break1:break2] = reversed(genotype[break1:break2])
 
-        return tuple(new_genotype)
+def reversed_sequence_mutation(mutation_probability, genotype):
+    new_genotype = list(genotype)
 
-    return reversed_sequence_mutation
+    if random.random() < mutation_probability:
+        num_genes = len(genotype)
+        break1, break2 = sorted(random.sample(range(num_genes + 1), 2))
+        new_genotype[break1:break2] = reversed(genotype[break1:break2])
+
+    return tuple(new_genotype)
 
 
 def get_every_city_mutation(mutation_probability):
@@ -34,19 +36,20 @@ def get_every_city_mutation(mutation_probability):
     Exchange Every City - each with given probability
     '''
 
-    def every_city_mutation(genotype):
-        num_genes = len(genotype)
-        new_genotype = list(genotype)
+    return fcn.partial(every_city_mutation, mutation_probability)
 
-        idxs = range(num_genes)
-        for _ in idxs:
-            if random.random() < mutation_probability:
-                i, j = random.sample(idxs, 2)
-                new_genotype[i], new_genotype[j] = new_genotype[j], new_genotype[i]
 
-        return tuple(new_genotype)
+def every_city_mutation(mutation_probability, genotype):
+    num_genes = len(genotype)
+    new_genotype = list(genotype)
 
-    return every_city_mutation
+    idxs = range(num_genes)
+    for _ in idxs:
+        if random.random() < mutation_probability:
+            i, j = random.sample(idxs, 2)
+            new_genotype[i], new_genotype[j] = new_genotype[j], new_genotype[i]
+
+    return tuple(new_genotype)
 
 
 def binomial(n, p):
@@ -59,16 +62,17 @@ def get2_every_city_mutation(mutation_probability):
     Exchange Every City - each with given probability
     '''
 
-    def every_city_mutation(genotype):
-        num_genes = len(genotype)
-        new_genotype = list(genotype)
+    return fcn.partial(every_city_mutation2, mutation_probability)
 
-        num_exchanged = binomial(num_genes - 1, mutation_probability)
-        idxs = random.sample(range(num_genes), num_exchanged)
 
-        for i, j in zip(idxs, sorted(idxs)):
-            new_genotype[i], new_genotype[j] = new_genotype[j], new_genotype[i]
+def every_city_mutation2(mutation_probability, genotype):
+    num_genes = len(genotype)
+    new_genotype = list(genotype)
 
-        return tuple(new_genotype)
+    num_exchanged = binomial(num_genes - 1, mutation_probability)
+    idxs = random.sample(range(num_genes), num_exchanged)
 
-    return every_city_mutation
+    for i, j in zip(idxs, sorted(idxs)):
+        new_genotype[i], new_genotype[j] = new_genotype[j], new_genotype[i]
+
+    return tuple(new_genotype)
