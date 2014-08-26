@@ -1,45 +1,13 @@
 '''
-module describing simple genetic algorithm
+Module containing an implementation of steady-state genetic algorithm.
 '''
 from pyislands.selection import ktournament
+from pyislands.ga import create_population
 
 import functools as fcn
 
 
-def evolution(evolve):
-    '''
-    Infinite generator for evolution of some population.
-    This generator yields (population, info):
-        population - tuple together containing tuples/individuals
-        info - dictionary defined using investigate function
-
-    population_0 = create()
-    population_1 = evolve(population_0, info_0)
-    .
-    .
-    population_k = evolve(population_k-1, info_k-1)
-    .
-    .
-
-    info_0 = investigate(population_0)
-    info_1 = investigate(population_1, info_0)
-    .
-    .
-    info_k-1 = investigate(population_k-1, info_k-1)
-    .
-    .
-
-    Since population is a tuple/an immutable type, a population cannot be
-    influenced by outside functions. Population can be used only to gather
-    statistics
-    '''
-    population, info = evolve()
-    while True:
-        yield population, info
-        population, info = evolve(population, info)
-
-
-def get_steady_evolve(generate, crossover, mutate, evaluate, population_size):
+def get_evolution(generate, crossover, mutate, evaluate, population_size):
     '''
     Returns closure evolve:
         evolve - uses crossover, mutate and evaluate to evolve some population
@@ -48,28 +16,11 @@ def get_steady_evolve(generate, crossover, mutate, evaluate, population_size):
     population_k = evolve(population_k-1)
     '''
 
-    evolve = fcn.partial(steady_evolve, generate, crossover, mutate, evaluate,
-            population_size)
-
-    return evolve
+    return fcn.partial(__evolve, generate, crossover, mutate,
+                       evaluate, population_size)
 
 
-def create_population(generate, evaluate, population_size):
-    '''
-    This function is used in steady_evolve to create an initial
-    population.
-    '''
-    genotypes = tuple(generate() for _ in range(population_size))
-    penalties = map(evaluate, genotypes)
-    population = tuple(zip(penalties, genotypes))
-
-    info = (('individuals', population_size),
-            ('evaluations', population_size))
-
-    return population, info
-
-
-def update_info(info):
+def __update_info(info):
     ''' evolution of information '''
 # This dictionary determines information update (specific for this function)
 # evals = 2 for comparing crossover children, 1 after mutation
@@ -81,7 +32,8 @@ def update_info(info):
     return new_info
 
 
-def steady_evolve(generate, crossover, mutate, evaluate, population_size, population=None, info=None):
+def __evolve(generate, crossover, mutate, evaluate, population_size,
+                    population=None, info=None):
     '''
     This function uses crossover, mutate and evalute, functions
     passed as arguments to get_steady_evolve.
@@ -111,4 +63,4 @@ def steady_evolve(generate, crossover, mutate, evaluate, population_size, popula
     new_population = list(population)
     new_population[bad_idx] = child
 
-    return tuple(new_population), update_info(info)
+    return tuple(new_population), __update_info(info)

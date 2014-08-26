@@ -2,7 +2,7 @@
 This module contains examples of solving a random travelling salesman
 problem using pyislands.
 '''
-import pyislands.ga.steady as ga
+from pyislands import ga
 from pyislands import island
 from pyislands.archipelago import topology
 import pyislands.archipelago.nonparallel as archipelago
@@ -35,8 +35,8 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
 
     crossover = partially_mapped_crossover
 
-    evolve = ga.get_steady_evolve(generate, crossover, mutate,
-                                  evaluate, population_size)
+    evolve = ga.steady.get_evolution(generate, crossover, mutate,
+                                     evaluate, population_size)
 
     return evolve
 
