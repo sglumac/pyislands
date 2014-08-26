@@ -33,23 +33,24 @@ def __update_info(info):
 
 
 def __evolve(generate, crossover, mutate, evaluate, population_size,
-                    population=None, info=None):
+             population=None, info=None):
     '''
     This function uses crossover, mutate and evalute, functions
     passed as arguments to get_steady_evolve.
     '''
 
 # Initial Population
-    if not population:
+    if population is None:
         return create_population(generate, evaluate, population_size)
 
 # Selection = 3-Tournament
     individuals, idxs = ktournament(population, 3)
-    parents = individuals[0:2]
-    bad_idx = idxs[2]
+    parent1, parent2, _ = individuals
+    _, _, bad_idx = idxs
 
 # Crossover
-    genotype1, genotype2 = (genotype for _, genotype in parents)
+    _, genotype1 = parent1
+    _, genotype2 = parent2
     children_genotypes = crossover(genotype1, genotype2)
     best_genotype = min(children_genotypes, key=evaluate)
 

@@ -1,4 +1,6 @@
 import random
+import functools as fcn
+
 
 def get_random_permutation_generator(elements):
     '''
@@ -9,14 +11,15 @@ def get_random_permutation_generator(elements):
 
     generator_elements = list(elements)
 
-    def random_permutation_generator():
-        ''' Closure which returns permutation of generator_elements '''
+    return fcn.partial(__random_permutation_generator, generator_elements)
 
-        random.shuffle(generator_elements)
 
-        return tuple(generator_elements)
+def __random_permutation_generator(generator_elements):
+    ''' Closure which returns permutation of generator_elements '''
 
-    return random_permutation_generator
+    random.shuffle(generator_elements)
+
+    return tuple(generator_elements)
 
 
 def unit(num_elements):
