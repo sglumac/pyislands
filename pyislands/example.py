@@ -2,7 +2,7 @@
 This module contains examples of solving a random travelling salesman
 problem using pyislands.
 '''
-from pyislands import ga
+import pyislands.ga.steady as ga
 from pyislands import island
 from pyislands.archipelago import topology
 import pyislands.archipelago.nonparallel as archipelago
