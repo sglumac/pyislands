@@ -8,7 +8,6 @@ from pyislands import island
 
 from pyislands.archipelago import topology
 from pyislands.archipelago import form_destinations
-from pyislands.archipelago.nonparallel import create_airports
 from pyislands.archipelago import immigration
 from pyislands.archipelago.immigration import get_immigration
 from pyislands.archipelago import emmigration
@@ -20,7 +19,11 @@ from pyislands.permutation.crossover import partially_mapped_crossover
 import pyislands.permutation.tsp as tsp
 
 from itertools import chain
+import functools as fcn
 
+
+def evaluate_tsp(adjacency_matrix, genotype):
+    return tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
 
 def generate_tsp_evolution(adjacency_matrix, num_cities):
     '''
@@ -32,8 +35,7 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     population_size = 10
     mutation_probability = 0.8
 
-    evaluate = lambda genotype: \
-        tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
+    evaluate = fcn.partial(evaluate_tsp, adjacency_matrix)
 
     elements = list(range(1, num_cities))
     generate = get_random_permutation_generator(elements)
@@ -58,12 +60,13 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
 # Simple Genetic Algorithm
     evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
-    solution, penalty = island.get_solution((evolve, None, None), num_iterations)
+    penalty, solution = island.get_solution((evolve, None, None), num_iterations)
 
     return tuple(chain([0], solution, [0])), penalty
 
 
-def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
+def solve_tsp_islands(adjacency_matrix, num_cities,
+                      num_iterations=10000, use_multiprocess=False):
     '''
     This functions runs an island genetic algorithm which evolves a solution of
     a travelling salesman problem. It shows how to print out simple diagnostic
@@ -79,7 +82,11 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
     evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
 # Migration Setup
-    airports = create_airports(num_islands)
+    airports = \
+        archipelago.multiprocess.create_airports(num_islands) \
+        if use_multiprocess else \
+        archipelago.nonparallel.create_airports(num_islands)
+
 
     migration_graph = topology.generate_regular(num_islands, degree)  # Ring topology
 
@@ -93,16 +100,20 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
         tuple(get_emmigration(emmigration.random_policy, migration_size, island_destinations)
               for island_destinations in destinations)
 
+    #immigrations = (None,) * num_islands
+    #emmigrations = (None,) * num_islands
     islands = tuple((evolve, immigrate, emmigrate)
                     for immigrate, emmigrate in zip(immigrations, emmigrations))
 
-    solution, penalty = \
+    penalty, solution = \
+        archipelago.multiprocess.get_solution(islands, num_iterations) \
+        if use_multiprocess else \
         archipelago.nonparallel.get_solution(islands, num_iterations)
 
     return tuple(chain([0], solution, [0])), penalty
 
 
-def main_tsp(num_cities=100, use_islands=False):
+def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
     '''
     This functions creates a random travelling salesman problem and
     solves it using classical or island model genetic algorithm.
@@ -111,7 +122,8 @@ def main_tsp(num_cities=100, use_islands=False):
     adjacency_matrix = tsp.generate_graph(cities)
 
     if use_islands:
-        solution, penalty = solve_tsp_islands(adjacency_matrix, num_cities)
+        solution, penalty = solve_tsp_islands(adjacency_matrix, num_cities,
+                                              use_multiprocess=use_multiprocess)
     else:
         solution, penalty = solve_tsp_classic(adjacency_matrix, num_cities)
 
@@ -120,4 +132,4 @@ def main_tsp(num_cities=100, use_islands=False):
 
 
 if __name__ == '__main__':
-    main_tsp(use_islands=False)
+    main_tsp(use_islands=True, use_multiprocess=True)

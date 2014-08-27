@@ -5,15 +5,12 @@ this module connects populations/islands using simple queues/lists.
 from pyislands import island
 
 import sys
-if sys.version_info[0] == 3:
-    from queue import Queue
-else:
-    from Queue import Queue
-from itertools import islice
-zipping = zip
 if sys.version_info[0] == 2:
-    from itertools import izip
-    zipping = izip
+    import Queue as queue
+    from itertools import izip as zip
+else:
+    import queue
+from itertools import islice
 
 
 def create_airports(num_islands):
@@ -23,7 +20,7 @@ def create_airports(num_islands):
     are used as an implementation of an airport.
     '''
 
-    airports = tuple(Queue() for _ in range(num_islands))
+    airports = tuple(queue.Queue() for _ in range(num_islands))
 
     return airports
 
@@ -37,12 +34,10 @@ def get_solution(islands, num_iterations):
 
     evolutions = map(island.evolution, islands)
 
-    for iteration, populations in islice(enumerate(zipping(*evolutions)), num_iterations):
+    for iteration, populations in islice(enumerate(zip(*evolutions)), num_iterations):
         best_individuals = map(min, populations)
         least_penalty, _ = min(best_individuals)
         print("iteration = {0}, penalty = {1}".
               format(iteration, least_penalty))
 
-    penalty, solution = min(map(min, populations))
-
-    return solution, penalty
+    return min(map(min, populations))

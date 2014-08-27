@@ -34,3 +34,4 @@ def form_destinations(migration_graph, airports):
 
 import pyislands.archipelago.topology
 import pyislands.archipelago.nonparallel
+import pyislands.archipelago.multiprocess

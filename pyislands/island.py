@@ -66,6 +66,4 @@ def get_solution(island, num_iterations):
         print("pid = {0}, iteration = {1}, penalty = {2}".
               format(pid, iteration, least_penalty))
 
-    penalty, solution = min(population)
-
-    return solution, penalty
+    return min(population)
