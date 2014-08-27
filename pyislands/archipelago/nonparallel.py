@@ -42,7 +42,8 @@ def form_destinations(migration_graph, airports):
     where dst_ij is an airport on island_j
     '''
 
-    destinations = tuple(itemgetter(*idxs)(airports) for idxs in migration_graph)
+    destinations = tuple(tuple(airports[idx] for idx in idxs)
+                         for idxs in migration_graph)
     
     return destinations
 
@@ -70,5 +71,5 @@ def evolution(islands):
                             in zip(evolves, populations))
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
-        for emmigrate, population in zip(immigrations, populations):
+        for emmigrate, population in zip(emmigrations, populations):
             emmigrate(population)

@@ -1,3 +1,5 @@
+from pyislands.selection import ktournament
+
 import functools as fcn
 
 
@@ -23,7 +25,7 @@ def __immigrate(policy, airport, population):
     immigrants = []
     while not airport.empty():
         genotype = airport.get()
-        immigrants.append(append)
+        immigrants.append(genotype)
 
 # mix immigrants with the population
     new_population = policy(population, immigrants)

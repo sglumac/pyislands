@@ -24,4 +24,3 @@ def random_policy(migration_size, destinations, population):
     for individual in emmigrants:
         destination = random.choice(destinations)
         destination.put(individual)
-        emmigrate(individual)
