@@ -4,6 +4,8 @@ problem using pyislands.
 '''
 from pyislands import ga
 from pyislands import archipelago
+from pyislands import island
+
 from pyislands.archipelago import topology
 from pyislands.archipelago import form_destinations
 from pyislands.archipelago.nonparallel import create_airports
@@ -55,19 +57,8 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
 
 # Simple Genetic Algorithm
     evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
-    evolution = ga.evolution(evolve)
 
-# Main Loop
-    for iteration, population in enumerate(evolution):
-        least_penalty, _ = min(population)
-        print("iteration = {0}, penalty = {1}".
-              format(iteration, least_penalty))
-
-# Termination Condition
-        if iteration >= num_iterations:
-            break
-
-    penalty, solution = min(population)
+    solution, penalty = island.get_solution((evolve, None, None), num_iterations)
 
     return tuple(chain([0], solution, [0])), penalty
 
@@ -105,19 +96,9 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
     islands = tuple((evolve, immigrate, emmigrate)
                     for immigrate, emmigrate in zip(immigrations, emmigrations))
 
-    evolution = archipelago.nonparallel.evolution(islands)
+    solution, penalty = \
+        archipelago.nonparallel.get_solution(islands, num_iterations)
 
-# Main Loop
-    for iteration, populations in enumerate(evolution):
-        best_individuals = map(min, populations)
-        least_penalty, _ = min(best_individuals)
-        print("iteration = {0}, penalty = {1}".
-              format(iteration, least_penalty))
-# Termination Condition
-        if iteration >= num_iterations:
-            break
-
-    penalty, solution = min(map(min, populations))
     return tuple(chain([0], solution, [0])), penalty
 
 
@@ -139,4 +120,4 @@ def main_tsp(num_cities=100, use_islands=False):
 
 
 if __name__ == '__main__':
-    main_tsp(use_islands=True)
+    main_tsp(use_islands=False)

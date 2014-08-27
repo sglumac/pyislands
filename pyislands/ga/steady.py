@@ -2,7 +2,7 @@
 Module containing an implementation of steady-state genetic algorithm.
 '''
 from pyislands.selection import ktournament
-from pyislands.ga import create_population
+from pyislands.island import create_population
 
 import functools as fcn
 

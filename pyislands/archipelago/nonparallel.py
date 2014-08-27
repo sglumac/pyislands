@@ -2,11 +2,18 @@
 Synchronous Island creation for testing on a single computer,
 this module connects populations/islands using simple queues/lists.
 '''
+from pyislands import island
+
 import sys
 if sys.version_info[0] == 3:
     from queue import Queue
 else:
     from Queue import Queue
+from itertools import islice
+zipping = zip
+if sys.version_info[0] == 2:
+    from itertools import izip
+    zipping = izip
 
 
 def create_airports(num_islands):
@@ -21,28 +28,21 @@ def create_airports(num_islands):
     return airports
 
 
-def evolution(islands):
+
+def get_solution(islands, num_iterations):
     '''
-    This is a Python generate which yields tuple of populations inhabiting
-    abstract islands.
+    Utility function used for getting a solutions from a single process algorithm.
     '''
-    evolves, immigrations, emmigrations = zip(*islands)
 
-# Since this is a single process implementation, populations are stored
-# list, not on the separate islands (processes)
-    populations = tuple(evolve() for evolve in evolves)
 
-    while True:
-        yield populations
+    evolutions = map(island.evolution, islands)
 
-# Immigration - Outside individuals are inhabiting an island
-        populations = (immigrate(population) for immigrate, population
-                       in zip(immigrations, populations))
+    for iteration, populations in islice(enumerate(zipping(*evolutions)), num_iterations):
+        best_individuals = map(min, populations)
+        least_penalty, _ = min(best_individuals)
+        print("iteration = {0}, penalty = {1}".
+              format(iteration, least_penalty))
 
-# Evolution - Each island population is evolved into the next generation
-        populations = tuple(evolve(population) for evolve, population
-                            in zip(evolves, populations))
+    penalty, solution = min(map(min, populations))
 
-# Emmigration - Sends individuals (clones) from one population onto voyage
-        for emmigrate, population in zip(emmigrations, populations):
-            emmigrate(population)
+    return solution, penalty
