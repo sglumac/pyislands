@@ -57,7 +57,7 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     evolution = ga.evolution(evolve)
 
 # Main Loop
-    for iteration, (population, dummy) in enumerate(evolution):
+    for iteration, population in enumerate(evolution):
         least_penalty, _ = min(population)
         print("iteration = {0}, penalty = {1}".
               format(iteration, least_penalty))

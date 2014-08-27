@@ -2,9 +2,11 @@
 Synchronous Island creation for testing on a single computer,
 this module connects populations/islands using simple queues/lists.
 '''
-from pyislands.archipelago import topology
-
-from Queue import Queue
+import sys
+if sys.version_info[0] == 3:
+    from queue import Queue
+else: 
+    from Queue import Queue
 from operator import itemgetter
 
 

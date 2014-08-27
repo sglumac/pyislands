@@ -25,10 +25,10 @@ def evolution(evolve):
     influenced by outside functions. Population can be used only to gather
     statistics
     '''
-    population, info = evolve()
+    population = evolve()
     while True:
-        yield population, info
-        population, info = evolve(population, info)
+        yield population
+        population = evolve(population)
 
 
 def create_population(generate, evaluate, population_size):
