@@ -1,12 +1,4 @@
-'''
-Synchronous Island creation for testing on a single computer,
-this module connects populations/islands using simple queues/lists.
-'''
-import sys
-if sys.version_info[0] == 3:
-    from queue import Queue
-else:
-    from Queue import Queue
+import multiprocessing
 
 
 def create_airports(num_islands):
@@ -16,12 +8,16 @@ def create_airports(num_islands):
     are used as an implementation of an airport.
     '''
 
+    manager = multiprocessing.Manager()
     airports = tuple(Queue() for _ in range(num_islands))
 
     return airports
 
 
-def evolution(islands):
+
+def get_solution(
+
+def evolution(island):
     '''
     This is a Python generate which yields tuple of populations inhabiting
     abstract islands.
@@ -46,3 +42,6 @@ def evolution(islands):
 # Emmigration - Sends individuals (clones) from one population onto voyage
         for emmigrate, population in zip(emmigrations, populations):
             emmigrate(population)
+
+
+evolution

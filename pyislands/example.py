@@ -5,7 +5,8 @@ problem using pyislands.
 from pyislands import ga
 from pyislands import archipelago
 from pyislands.archipelago import topology
-from pyislands.archipelago.nonparallel import create_airports, form_destinations
+from pyislands.archipelago import form_destinations
+from pyislands.archipelago.nonparallel import create_airports
 from pyislands.archipelago import immigration
 from pyislands.archipelago.immigration import get_immigration
 from pyislands.archipelago import emmigration
@@ -89,7 +90,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
 # Migration Setup
     airports = create_airports(num_islands)
 
-    migration_graph = topology.generate_regular(num_islands, 1)  # Ring topology
+    migration_graph = topology.generate_regular(num_islands, degree)  # Ring topology
 
     destinations = form_destinations(migration_graph, airports)
 
@@ -103,7 +104,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
 
     islands = tuple((evolve, immigrate, emmigrate)
                     for immigrate, emmigrate in zip(immigrations, emmigrations))
-                
+
     evolution = archipelago.nonparallel.evolution(islands)
 
 # Main Loop
