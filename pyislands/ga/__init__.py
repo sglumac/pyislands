@@ -40,10 +40,7 @@ def create_population(generate, evaluate, population_size):
     penalties = map(evaluate, genotypes)
     population = tuple(zip(penalties, genotypes))
 
-    info = (('individuals', population_size),
-            ('evaluations', population_size))
-
-    return population, info
+    return population
 
 
 import pyislands.ga.steady

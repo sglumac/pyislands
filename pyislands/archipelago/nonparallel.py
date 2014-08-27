@@ -4,63 +4,69 @@ this module connects populations/islands using simple queues/lists.
 '''
 from pyislands.archipelago import topology
 
+from Queue import Queue
+from operator import itemgetter
 
-def create_migrations(num_islands, degree):
+
+def create_airports(num_islands):
     '''
-    Create functions used for transferring individuals from
-    one islands to another, creates tuple of tuples.
-
-    topology - directed graph representing connections between islands
+    An airport is a traffic stop for an islands. An airport
+    should support get, put and empty operations. Queues
+    are used as an implementation of an airport.
     '''
 
-    migration_graph = topology.generate_regular(num_islands, degree)
+    airports = tuple(Queue() for _ in range(num_islands))
 
-# an airport receives individuals, it's a traffic stop for an islands
-# for single process implementation, an airport is a simple list
-    airports = [list() for _ in range(num_islands)]
-
-    def generate_immigration(airport):
-        def immigrate():
-            immigrants = []
-            while airport:
-                immigrants.append(airport.pop())
-            return tuple(immigrants)
-        return immigrate
-
-    immigrations = tuple(map(generate_immigration, airports))
-
-    def generate_emmigration(idx):
-        destination = airports[idx]
-        def emmigrate(individual):
-            destination.append(individual)
-        return emmigrate
-
-    emmigrations = tuple(tuple(generate_emmigration(neighbor_idx)
-                               for neighbor_idx in neighbors)
-                         for neighbors in migration_graph)
-
-    return immigrations, emmigrations
+    return airports
 
 
-def evolution(evolve, immigration_policies, emmigration_policies):
+def form_destinations(migration_graph, airports):
+    '''
+    This functions forms destinations for each island emmigration
+    based on adjacency matrix migration_graph. It returns tuple of tuples:
+
+    destinations = (destinations_island_0,
+                    destinations_islands_1,
+                    .
+                    .
+                    destinations_islands_n)
+
+    destinations_island_0 = (dst_00, dst_01, ..., dst_0m)
+    destinations_island_1 = (dst_10, dst_11, ..., dst_0m)
+    .
+    .
+    destinations_island_n = (dst_n0, dst_n1, ..., dst_0m)
+
+    where dst_ij is an airport on island_j
+    '''
+
+    destinations = tuple(itemgetter(*idxs)(airports) for idxs in migration_graph)
+    
+    return destinations
+
+
+def evolution(islands):
     '''
     This is a Python generate which yields tuple of populations inhabiting
     abstract islands.
     '''
-    num_islands = len(immigration_policies)
+    evolves, immigrations, emmigrations = zip(*islands)
 
-    islands = tuple(evolve() for _ in range(num_islands))
+# Since this is a single process implementation, populations are stored
+# list, not on the separate islands (processes)
+    populations = tuple(evolve() for evolve in evolves)
 
     while True:
-        yield islands
+        yield populations
 
 # Immigration - Outside individuals are inhabiting an island
-        islands = ((immigrate(population, info) for (population, info), immigrate
-                   in zip(islands, immigration_policies)))
+        populations = (immigrate(population) for immigrate, population
+                       in zip(immigrations, populations))
 
 # Evolution - Each island population is evolved into the next generation
-        islands = tuple(evolve(population, info) for population, info in islands)
+        populations = tuple(evolve(population) for evolve, population
+                            in zip(evolves, populations))
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
-        for (population, _), migrate in zip(islands, emmigration_policies):
-            migrate(population)
+        for emmigrate, population in zip(immigrations, populations):
+            emmigrate(population)

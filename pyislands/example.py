@@ -3,9 +3,13 @@ This module contains examples of solving a random travelling salesman
 problem using pyislands.
 '''
 from pyislands import ga
-from pyislands import island
+from pyislands import archipelago
 from pyislands.archipelago import topology
-import pyislands.archipelago.nonparallel as archipelago
+from pyislands.archipelago.nonparallel import create_airports, form_destinations
+from pyislands.archipelago import immigration
+from pyislands.archipelago.immigration import get_immigration
+from pyislands.archipelago import emmigration
+from pyislands.archipelago.emmigration import get_emmigration
 
 from pyislands.permutation.generate import get_random_permutation_generator
 from pyislands.permutation.mutation import get_reversed_sequence_mutation
@@ -83,23 +87,28 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
     evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
 # Migration Setup
-    immigrations, emmigrations = \
-        archipelago.create_migrations(num_islands, degree)
+    airports = create_airports(num_islands)
 
-    immigration_policies = \
-        tuple(island.get_2tournament_immigration_policy(immigrate)
-              for immigrate in immigrations)
+    migration_graph = topology.generate_regular(num_islands, 1)  # Ring topology
 
-    emmigration_policies = \
-        tuple(island.get_random_emmigration_policy(emmigration, migration_size)
-              for emmigration in emmigrations)
+    destinations = form_destinations(migration_graph, airports)
 
-    evolution = archipelago.evolution(evolve, immigration_policies, emmigration_policies)
+    immigrations = \
+        tuple(get_immigration(airport, immigration.policy_2tournament)
+              for airport in airports)
+
+    emmigrations = \
+        tuple(get_emmigration(emmigration.random_policy, migration_size, island_destinations)
+              for island_destinations in destinations)
+
+    islands = tuple((evolve, immigrate, emmigrate)
+                    for immigrate, emmigrate in zip(immigrations, emmigrations))
+                
+    evolution = archipelago.nonparallel.evolution(islands)
 
 # Main Loop
-    for iteration, islands in enumerate(evolution):
-        best_individuals = map(min, (population for population, info
-                                     in islands))
+    for iteration, populations in enumerate(evolution):
+        best_individuals = map(min, populations)
         least_penalty, _ = min(best_individuals)
         print("iteration = {0}, penalty = {1}".
               format(iteration, least_penalty))
@@ -107,7 +116,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities, num_iterations=10000):
         if iteration >= num_iterations:
             break
 
-    penalty, solution = min(map(min, (population for population, _ in islands)))
+    penalty, solution = min(map(min, populations))
     return tuple(chain([0], solution, [0])), penalty
 
 

@@ -20,20 +20,8 @@ def get_evolution(generate, crossover, mutate, evaluate, population_size):
                        evaluate, population_size)
 
 
-def __update_info(info):
-    ''' evolution of information '''
-# This dictionary determines information update (specific for this function)
-# evals = 2 for comparing crossover children, 1 after mutation
-    info_dict = {'individuals': lambda n: n + 1,
-                 'evaluations': lambda n: n + 3}
-
-    new_info = tuple(((k, info_dict[k](v)) for k, v in info))
-
-    return new_info
-
-
 def __evolve(generate, crossover, mutate, evaluate, population_size,
-             population=None, info=None):
+             population=None):
     '''
     This function uses crossover, mutate and evalute, functions
     passed as arguments to get_steady_evolve.
@@ -64,4 +52,4 @@ def __evolve(generate, crossover, mutate, evaluate, population_size,
     new_population = list(population)
     new_population[bad_idx] = child
 
-    return tuple(new_population), __update_info(info)
+    return tuple(new_population)
