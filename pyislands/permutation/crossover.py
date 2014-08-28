@@ -8,7 +8,7 @@ with signature:
 
 where object children is list of individuals.
 '''
-from random import sample
+import random
 from itertools import chain
 
 
@@ -42,7 +42,11 @@ def partially_mapped_crossover(parent1, parent2):
     child1 = list(parent1)
     child2 = list(parent2)
 
-    break1, break2 = sorted(sample(range(num_genes + 1), 2))
+    break1 = random.randrange(num_genes + 1)
+    tmp = random.randrange(num_genes)
+    break2 = (break1 + tmp) % (num_genes + 1)
+    if break1 > break2:
+        break1, break2 = break2, break1
 
     child1[break1:break2], child2[break1:break2] = \
             child2[break1:break2], child1[break1:break2]
