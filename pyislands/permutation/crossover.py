@@ -39,14 +39,16 @@ def pmx_find(gen, swath1_dict):
     return gen
 
 
-def gen_pmx_child(parent1, swath1_dict, break1, break2, num_genes):
+def gen_pmx_child(parent1, swath1, swath2, break1, break2, num_genes):
+
+    swath1_dict = dict(zip(swath1, swath2))
 
     part1 = (pmx_find(gen, swath1_dict)
              for gen in islice(parent1, break1))
     part2 = (pmx_find(gen, swath1_dict)
              for gen in islice(parent1, break2, num_genes))
 
-    return tuple(chain(part1, swath1_dict, part2))
+    return tuple(chain(part1, swath1, part2))
 
 
 def partially_mapped_crossover(parent1, parent2):
@@ -62,10 +64,50 @@ def partially_mapped_crossover(parent1, parent2):
 
     swath1, swath2 = parent2[break1:break2], parent1[break1:break2]
 
-    swath1_dict = dict(zip(swath1, swath2))
-    swath2_dict = dict(zip(swath2, swath1))
+    child1 = gen_pmx_child(parent1, swath1, swath2, break1, break2, num_genes)
+    child2 = gen_pmx_child(parent2, swath2, swath1, break1, break2, num_genes)
 
-    child1 = gen_pmx_child(parent1, swath1_dict, break1, break2, num_genes)
-    child2 = gen_pmx_child(parent2, swath2_dict, break1, break2, num_genes)
+    return child1, child2
+
+
+def gen_pmx_swath_old(parent1, parent2, break1, break2):
+
+    swath1, swath2 = parent2[break1:break2], parent1[break1:break2]
+    return swath1, swath2
+
+
+def pmx_find_old(gen, swath1, swath2):
+    while gen in swath1:
+        gen = swath2[swath1.index(gen)]
+    return gen
+
+def gen_pmx_child_old(parent1, parent2, swath1, swath2, break1, break2, num_genes):
+
+    part1 = (pmx_find(gen, swath1, swath2)
+             for gen in islice(parent1, break1))
+    part2 = (pmx_find(gen, swath1, swath2)
+             for gen in islice(parent1, break2, num_genes))
+
+    return tuple(chain(part1, swath1, part2))
+
+
+def partially_mapped_crossover_old(parent1, parent2):
+    '''
+    Partially Mapped Crossover
+    '''
+    num_genes = len(parent1)
+
+
+    break1 = random.randrange(num_genes)
+    break2 = (break1 + random.randrange(num_genes)) % num_genes
+    if break1 > break2:
+        break1, break2 = break2, break1
+
+    swath1, swath2 = gen_pmx_swath_old(parent1, parent2, break1, break2)
+
+    child1 = gen_pmx_child(parent1, parent2, swath1, swath2, break1, break2,
+            num_genes)
+    child2 = gen_pmx_child(parent2, parent1, swath2, swath1, break1, break2,
+            num_genes)
 
     return child1, child2
