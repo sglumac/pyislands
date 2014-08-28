@@ -1,5 +1,6 @@
 from math import sqrt
 from random import random
+import itertools
 
 
 def generate_graph(cities):
@@ -12,8 +13,8 @@ def generate_graph(cities):
             - n = len(cities)
     '''
     adjacency_matrix = \
-            [[sqrt((x2-x1) ** 2 + (y2 - y1) ** 2) for (x1, y1) in cities]
-             for (x2, y2) in cities]
+        [[sqrt((x2-x1) ** 2 + (y2 - y1) ** 2) for (x1, y1) in cities]
+         for (x2, y2) in cities]
 
     return adjacency_matrix
 
@@ -24,8 +25,10 @@ def evaluate_path(adjacency_matrix, tsp_path):
 
     tsp_path = [city1, city2, ..., cityn]
     '''
+    iter0, iter1 = itertools.tee(tsp_path)
+    next(iter1, None)
     return sum(adjacency_matrix[city1][city2]
-               for city1, city2 in zip(tsp_path[:-1], tsp_path[1:]))
+               for city1, city2 in zip(iter0, iter1))
 
 
 def random_cities(num_cities=100):
