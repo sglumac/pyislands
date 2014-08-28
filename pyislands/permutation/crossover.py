@@ -40,10 +40,10 @@ def pmx_find(gen, swath1, swath2):
 
 def gen_pmx_child(parent1, parent2, swath1, swath2, break1, break2, num_genes):
 
-    part1 = (pmx_find(gen, swath1, swath2) for gen in
-             islice(parent1, break1))
-    part2 = (pmx_find(gen, swath1, swath2) for gen in
-             islice(parent1, break2, num_genes))
+    part1 = (pmx_find(gen, swath1, swath2)
+             for gen in islice(parent1, break1))
+    part2 = (pmx_find(gen, swath1, swath2)
+             for gen in islice(parent1, break2, num_genes))
 
     return tuple(chain(part1, swath1, part2))
 
@@ -55,9 +55,8 @@ def partially_mapped_crossover(parent1, parent2):
     num_genes = len(parent1)
 
 
-    break1 = random.randrange(num_genes + 1)
-    tmp = random.randrange(num_genes)
-    break2 = (break1 + tmp) % (num_genes + 1)
+    break1 = random.randrange(num_genes)
+    break2 = (break1 + random.randrange(num_genes)) % num_genes
     if break1 > break2:
         break1, break2 = break2, break1
 
