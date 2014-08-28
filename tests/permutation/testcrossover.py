@@ -33,12 +33,13 @@ def test_pmx():
         for i in parent1_genotype:
             assert i in genotype
 
+
 def test_pmx_find():
     swath1 = (0, 1, 2, 3)
     swath2 = (1, 2, 3, 4)
 
-    gen = pmx_find(0, swath1, swath2)
+    swath1_dict = dict(zip(swath1, swath2))
+    swath2_dict = dict(zip(swath2, swath1))
 
-    assert gen == 4
-
-
+    assert pmx_find(0, swath1_dict) == 4
+    assert pmx_find(2, swath2_dict) == 0
