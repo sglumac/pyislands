@@ -1,5 +1,6 @@
 from pyislands.permutation.crossover import cyclic_crossover
 from pyislands.permutation.crossover import partially_mapped_crossover
+from pyislands.permutation.crossover import pmx_find
 
 
 def test_cx1():
@@ -31,3 +32,13 @@ def test_pmx():
     for genotype in children_genotypes:
         for i in parent1_genotype:
             assert i in genotype
+
+def test_pmx_find():
+    swath1 = (0, 1, 2, 3)
+    swath2 = (1, 2, 3, 4)
+
+    gen = pmx_find(0, swath1, swath2)
+
+    assert gen == 4
+
+
