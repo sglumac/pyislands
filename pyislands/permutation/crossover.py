@@ -9,7 +9,7 @@ with signature:
 where object children is list of individuals.
 '''
 import random
-from itertools import chain
+from itertools import chain, islice
 
 
 def cyclic_crossover(parent1, parent2):
@@ -33,14 +33,27 @@ def cyclic_crossover(parent1, parent2):
     return tuple(child1), tuple(child2)
 
 
+def pmx_find(gen, swath1, swath2):
+    while gen in swath1:
+        gen = swath2[swath1.index(gen)]
+    return gen
+
+def gen_pmx_child(parent1, parent2, swath1, swath2, break1, break2, num_genes):
+
+    part1 = (pmx_find(gen, swath1, swath2) for gen in
+             islice(parent1, break1))
+    part2 = (pmx_find(gen, swath1, swath2) for gen in
+             islice(parent1, break2, num_genes))
+
+    return tuple(chain(part1, swath1, part2))
+
+
 def partially_mapped_crossover(parent1, parent2):
     '''
     Partially Mapped Crossover
     '''
     num_genes = len(parent1)
 
-    child1 = list(parent1)
-    child2 = list(parent2)
 
     break1 = random.randrange(num_genes + 1)
     tmp = random.randrange(num_genes)
@@ -48,21 +61,11 @@ def partially_mapped_crossover(parent1, parent2):
     if break1 > break2:
         break1, break2 = break2, break1
 
-    child1[break1:break2], child2[break1:break2] = \
-            child2[break1:break2], child1[break1:break2]
-    swath1, swath2 = child1[break1:break2], child2[break1:break2]
+    swath1, swath2 = parent2[break1:break2], parent1[break1:break2]
 
-    for i in chain(range(break1), range(break2, num_genes)):
-        gen = child1[i]
-        while gen in swath1:
-            j = swath1.index(gen)
-            gen = swath2[j]
-        child1[i] = gen
+    child1 = gen_pmx_child(parent1, parent2, swath1, swath2, break1, break2,
+            num_genes)
+    child2 = gen_pmx_child(parent2, parent1, swath2, swath1, break1, break2,
+            num_genes)
 
-        gen = child2[i]
-        while gen in swath2:
-            j = swath2.index(gen)
-            gen = swath1[j]
-        child2[i] = gen
-
-    return tuple(child1), tuple(child2)
+    return child1, child2
