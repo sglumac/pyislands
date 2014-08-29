@@ -14,7 +14,7 @@ from pyislands.archipelago import emmigration
 from pyislands.archipelago.emmigration import get_emmigration
 
 from pyislands.permutation.generate import get_random_permutation_generator
-from pyislands.permutation.mutation import get_reversed_sequence_mutation
+from pyislands.permutation.mutation.rsm import get_reversed_sequence_mutation
 from pyislands.permutation.crossover import partially_mapped_crossover
 import pyislands.permutation.tsp as tsp
 
