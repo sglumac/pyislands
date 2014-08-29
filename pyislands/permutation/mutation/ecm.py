@@ -7,7 +7,7 @@ def get_every_city_mutation(mutation_probability):
     Exchange Every City - each with given probability
     '''
 
-    return fcn.partial(__every_city_mutation2, mutation_probability)
+    return fcn.partial(__every_city_mutation, mutation_probability)
 
 
 def __binomial(n, p):
@@ -16,6 +16,7 @@ def __binomial(n, p):
 
 
 def __every_city_mutation(mutation_probability, genotype):
+
     num_genes = len(genotype)
     new_genotype = list(genotype)
 
