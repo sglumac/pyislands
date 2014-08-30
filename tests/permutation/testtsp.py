@@ -1,4 +1,4 @@
-from pyislands.permutation.tsp import generate_graph, evaluate_path
+from pyislands.permutation.tsp.graph import generate_graph, evaluate_path
 from nose.tools import assert_almost_equals
 from math import sqrt
 import functools as fcn

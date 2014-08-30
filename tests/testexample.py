@@ -1,4 +1,4 @@
-import pyislands.permutation.tsp as tsp
+import pyislands.permutation.tsp.graph as tsp
 from pyislands.example import solve_tsp_classic, solve_tsp_islands
 
 from math import sqrt
