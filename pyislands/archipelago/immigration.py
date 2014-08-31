@@ -39,7 +39,7 @@ def policy_2tournament(population, immigrants):
     new_population = list(population)
 
     for immigrant in immigrants:
-        _, idxs = ktournament(population, 2)
+        _, idxs = ktournament(2, population)
         bad_idx = idxs[1]
 
         new_population[bad_idx] = immigrant

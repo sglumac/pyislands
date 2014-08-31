@@ -4,7 +4,7 @@ Module containing selection functions on population
 import random
 
 
-def ktournament(population, k_individuals):
+def ktournament(k, population):
     '''
     randomly select k-individuals from the population
     and sort them by penalty in the increasing order
@@ -13,7 +13,7 @@ def ktournament(population, k_individuals):
     enumerated_population = list(enumerate(population))
 
 # enumerated_individual = (idx, (penalty, genotype))
-    selected_individuals = random.sample(enumerated_population, k_individuals)
+    selected_individuals = random.sample(enumerated_population, k)
 
     penalty = lambda enumerated_individual: enumerated_individual[1][0]
 

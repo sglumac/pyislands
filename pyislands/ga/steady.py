@@ -32,7 +32,7 @@ def __evolve(generate, crossover, mutate, evaluate, population_size,
         return create_population(generate, evaluate, population_size)
 
 # Selection = 3-Tournament
-    individuals, idxs = ktournament(population, 3)
+    individuals, idxs = ktournament(3, population)
     parent1, parent2, _ = individuals
     _, _, bad_idx = idxs
 
