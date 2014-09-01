@@ -1,3 +1,5 @@
+from pyislands.types import Individual
+
 from itertools import islice
 import os
 
@@ -9,7 +11,7 @@ def create_population(generate, evaluate, population_size):
     '''
     genotypes = tuple(generate() for _ in range(population_size))
     penalties = map(evaluate, genotypes)
-    population = tuple(zip(penalties, genotypes))
+    population = tuple(map(Individual, penalties, genotypes))
 
     return population
 

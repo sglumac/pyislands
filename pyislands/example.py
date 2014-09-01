@@ -47,7 +47,7 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     evolve = ga.steady.get_evolution(crossover, mutate, evaluate)
 
     create = fcn.partial(island.create_population, generate, evaluate,
-            population_size)
+                         population_size)
 
     return create, evolve
 

@@ -2,6 +2,8 @@
 Module containing an implementation of steady-state genetic algorithm.
 maybe BAD IMPLEMENTATION <- extra parents, extra children
 '''
+from pyislands.types import Individual
+
 import functools as fcn
 
 
@@ -18,33 +20,36 @@ def get_evolution(get_select, crossover, mutate, evaluate):
     return fcn.partial(__evolve, get_select, crossover, mutate, evaluate)
 
 
+def __create_child(select, crossover, mutate, evaluate, dummy):
+    ''' create one child '''
+
+    mother, father = select(), select()
+
+# Crossover
+    children_genotypes = crossover(mother.genotype, father.genotype)
+    best_genotype = min(children_genotypes, key=evaluate)
+
+# Mutation
+    new_genotype = mutate(best_genotype)
+
+    penalty = evaluate(new_genotype)
+
+    child = Individual(penalty, new_genotype)
+
+    return child
+
+
 def __evolve(get_select, crossover, mutate, evaluate, population):
     '''
     This function uses crossover, mutate and evalute, functions
     passed as arguments to get_steady_evolve.
     '''
 
-    population_size = len(population)
-
-# Selection
     select = get_select(population)
 
-    mothers = (select() for _ in population)
-    fathers = (select() for _ in population)
+    create_child = fcn.partial(__create_child, select, crossover,
+                               mutate, evaluate)
 
-    mother_genotypes = (genotype for _, genotype in mothers)
-    father_genotypes = (genotype for _, genotype in fathers)
-
-# Crossover
-    children_genotypes = map(crossover, mother_genotypes, father_genotypes)
-
-# Mutation
-    mutated_genotypes = map(mutate, children_genotypes)
-    penalties = map(evaluate, mutated_genotypes)
-
-    children = zip(penalties, mutated_genotypes)
-
-# Replace bad individual
-    new_population = tuple(islice(sorted(children), population_size))
+    new_population = tuple(map(create_child, population))
 
     return new_population

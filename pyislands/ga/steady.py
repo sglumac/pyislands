@@ -2,6 +2,7 @@
 Module containing an implementation of steady-state genetic algorithm.
 '''
 from pyislands.selection import ktournament
+from pyislands.types import Individual
 
 import functools as fcn
 
@@ -26,20 +27,18 @@ def __evolve(crossover, mutate, evaluate, population):
 
 # Selection = 3-Tournament
     individuals, idxs = ktournament(3, population)
-    parent1, parent2, _ = individuals
-    _, _, bad_idx = idxs
+    parent1, parent2 = individuals[0:2]
+    bad_idx = idxs[-1]
 
 # Crossover
-    _, genotype1 = parent1
-    _, genotype2 = parent2
-    children_genotypes = crossover(genotype1, genotype2)
+    children_genotypes = crossover(parent1.genotype, parent2.genotype)
     best_genotype = min(children_genotypes, key=evaluate)
 
 # Mutation
     new_genotype = mutate(best_genotype)
     penalty = evaluate(new_genotype)
 
-    child = (penalty, new_genotype)
+    child = Individual(penalty, new_genotype)
 
 # Replace bad individual
     new_population = list(population)
