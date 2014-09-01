@@ -2,7 +2,7 @@
 Module containing an implementation of steady-state genetic algorithm.
 '''
 from pyislands.selection import ktournament
-from pyislands.types import Individual
+from pyislands.types import create_individual
 
 import functools as fcn
 
@@ -38,7 +38,7 @@ def __evolve(crossover, mutate, evaluate, population):
     new_genotype = mutate(best_genotype)
     penalty = evaluate(new_genotype)
 
-    child = Individual(penalty, new_genotype)
+    child = create_individual(evaluate, new_genotype)
 
 # Replace bad individual
     new_population = list(population)

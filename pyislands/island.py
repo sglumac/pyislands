@@ -1,7 +1,8 @@
-from pyislands.types import Individual
+from pyislands.types import create_individual
 
-from itertools import islice
 import os
+import functools as fcn
+from itertools import islice
 
 
 def create_population(generate, evaluate, population_size):
@@ -10,8 +11,7 @@ def create_population(generate, evaluate, population_size):
     population.
     '''
     genotypes = tuple(generate() for _ in range(population_size))
-    penalties = map(evaluate, genotypes)
-    population = tuple(map(Individual, penalties, genotypes))
+    population = tuple(map(fcn.partial(create_individual, evaluate), genotypes))
 
     return population
 
