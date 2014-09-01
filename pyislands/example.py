@@ -44,10 +44,12 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
 
     crossover = partially_mapped_crossover
 
-    evolve = ga.steady.get_evolution(generate, crossover, mutate,
-                                     evaluate, population_size)
+    evolve = ga.steady.get_evolution(crossover, mutate, evaluate)
 
-    return evolve
+    create = fcn.partial(island.create_population, generate, evaluate,
+            population_size)
+
+    return create, evolve
 
 
 def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
@@ -58,9 +60,9 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     '''
 
 # Simple Genetic Algorithm
-    evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
-    penalty, solution = island.get_solution((evolve, None, None), num_iterations)
+    penalty, solution = island.get_solution((create, evolve, None, None), num_iterations)
 
     return tuple(chain([0], solution, [0])), penalty
 
@@ -79,7 +81,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities,
     degree = 1
 
 # Simple Genetic Algorithm
-    evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
 # Migration Setup
     airports = \
@@ -102,7 +104,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities,
 
     #immigrations = (None,) * num_islands
     #emmigrations = (None,) * num_islands
-    islands = tuple((evolve, immigrate, emmigrate)
+    islands = tuple((create, evolve, immigrate, emmigrate)
                     for immigrate, emmigrate in zip(immigrations, emmigrations))
 
     penalty, solution = \

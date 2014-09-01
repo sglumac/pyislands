@@ -2,12 +2,11 @@
 Module containing an implementation of steady-state genetic algorithm.
 '''
 from pyislands.selection import ktournament
-from pyislands.island import create_population
 
 import functools as fcn
 
 
-def get_evolution(generate, crossover, mutate, evaluate, population_size):
+def get_evolution(crossover, mutate, evaluate):
     '''
     Returns closure evolve:
         evolve - uses crossover, mutate and evaluate to evolve some population
@@ -16,20 +15,14 @@ def get_evolution(generate, crossover, mutate, evaluate, population_size):
     population_k = evolve(population_k-1)
     '''
 
-    return fcn.partial(__evolve, generate, crossover, mutate,
-                       evaluate, population_size)
+    return fcn.partial(__evolve, crossover, mutate, evaluate)
 
 
-def __evolve(generate, crossover, mutate, evaluate, population_size,
-             population=None):
+def __evolve(crossover, mutate, evaluate, population):
     '''
     This function uses crossover, mutate and evalute, functions
     passed as arguments to get_steady_evolve.
     '''
-
-# Initial Population
-    if population is None:
-        return create_population(generate, evaluate, population_size)
 
 # Selection = 3-Tournament
     individuals, idxs = ktournament(3, population)

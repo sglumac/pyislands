@@ -36,9 +36,9 @@ def evolution(island):
     becomes a classical genetic algorithm.
     '''
 
-    evolve, immigrate, emmigrate = island
+    create, evolve, immigrate, emmigrate = island
 
-    population = evolve()
+    population = create()
 
     while True:
         yield population
