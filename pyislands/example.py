@@ -5,6 +5,7 @@ problem using pyislands.
 from pyislands import ga
 from pyislands import archipelago
 from pyislands import island
+from pyislands.types import Island
 
 from pyislands.archipelago import topology
 from pyislands.archipelago import form_destinations
@@ -46,10 +47,10 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
 
     evolve = ga.steady.get_evolution(crossover, mutate, evaluate)
 
-    create = fcn.partial(island.create_population, generate, evaluate,
+    create_population = fcn.partial(island.create_population, generate, evaluate,
                          population_size)
 
-    return create, evolve
+    return create_population, evolve
 
 
 def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
@@ -60,9 +61,9 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     '''
 
 # Simple Genetic Algorithm
-    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    create_population, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
-    penalty, solution = island.get_solution((create, evolve, None, None), num_iterations)
+    penalty, solution = island.get_solution(Island(create_population, evolve, None, None), num_iterations)
 
     return tuple(chain([0], solution, [0])), penalty
 
@@ -81,7 +82,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities,
     degree = 1
 
 # Simple Genetic Algorithm
-    create, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    create_population, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
 # Migration Setup
     airports = \
@@ -104,7 +105,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities,
 
     #immigrations = (None,) * num_islands
     #emmigrations = (None,) * num_islands
-    islands = tuple((create, evolve, immigrate, emmigrate)
+    islands = tuple(Island(create_population, evolve, immigrate, emmigrate)
                     for immigrate, emmigrate in zip(immigrations, emmigrations))
 
     penalty, solution = \
@@ -134,4 +135,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, False)
+    main_tsp(500, False, False)

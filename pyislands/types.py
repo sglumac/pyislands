@@ -1,8 +1,11 @@
 from collections import namedtuple
-import functools as fcn
 
 
 Individual = namedtuple('Individual', ['penalty', 'genotype'])
+
+Island = namedtuple('Island', ['create_population', 'evolve',
+                               'immigrate', 'emmigrate'])
+
 
 def create_individual(evaluate, genotype):
     ''' Utility function used for evaluating genotype '''

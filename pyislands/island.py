@@ -38,23 +38,21 @@ def evolution(island):
     becomes a classical genetic algorithm.
     '''
 
-    create, evolve, immigrate, emmigrate = island
-
-    population = create()
+    population = island.create_population()
 
     while True:
         yield population
 
 # Immigration - Outside individuals are inhabiting an island
-        if immigrate:
-            population = immigrate(population)
+        if island.immigrate:
+            population = island.immigrate(population)
 
 # Evolution - Each island population is evolved into the next generation
-        population = evolve(population)
+        population = island.evolve(population)
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
-        if emmigrate:
-            emmigrate(population)
+        if island.emmigrate:
+            island.emmigrate(population)
 
 
 def get_solution(island, num_iterations):
