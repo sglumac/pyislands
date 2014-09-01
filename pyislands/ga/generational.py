@@ -1,6 +1,5 @@
 '''
-Module containing an implementation of steady-state genetic algorithm.
-maybe BAD IMPLEMENTATION <- extra parents, extra children
+Module containing an implementation of generational genetic algorithm.
 '''
 from pyislands.types import create_individual
 
@@ -41,6 +40,8 @@ def __evolve(get_select, crossover, mutate, evaluate, population):
     '''
     This function uses crossover, mutate and evalute, functions
     passed as arguments to get_steady_evolve.
+
+    Preserves one elite individual.
     '''
 
     select = get_select(population)
@@ -48,6 +49,10 @@ def __evolve(get_select, crossover, mutate, evaluate, population):
     create_child = fcn.partial(__create_child, select, crossover,
                                mutate, evaluate)
 
-    new_population = tuple(map(create_child, population))
+    children_population = map(create_child, population[:-1])
+
+    best_individual = min(population)
+
+    new_population = tuple(chain(children_population, [best_individual]))
 
     return new_population
