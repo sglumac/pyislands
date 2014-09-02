@@ -2,7 +2,7 @@ from pyislands.types import create_individual
 
 import os
 import functools as fcn
-from itertools import islice
+from itertools import islice, count
 
 
 def create_population(generate, evaluate, population_size):
@@ -40,7 +40,7 @@ def evolution(island):
 
     population = island.create_population()
 
-    while True:
+    for iteration in count():
         yield population
 
 # Immigration - Outside individuals are inhabiting an island
@@ -51,7 +51,7 @@ def evolution(island):
         population = island.evolve(population)
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
-        if island.emmigrate:
+        if island.emmigrate and iteration % island.migration_interval == 0:
             island.emmigrate(population)
 
 
