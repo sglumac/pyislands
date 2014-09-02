@@ -1,3 +1,3 @@
 import tests.permutation.mutation
-import tests.permutation.testcrossover
+import tests.permutation.crossover
 import tests.permutation.testgenerate
