@@ -6,7 +6,7 @@ from pyislands.types import create_individual
 import functools as fcn
 
 
-def get_evolution(get_select, crossover, mutate, evaluate):
+def get_elitist_evolution(get_select, crossover, mutate, evaluate):
     '''
     Returns closure evolve:
         evolve - uses get_select, crossover, mutate and evaluate
@@ -16,7 +16,7 @@ def get_evolution(get_select, crossover, mutate, evaluate):
     population_k = evolve(population_k-1)
     '''
 
-    return fcn.partial(__evolve, get_select, crossover, mutate, evaluate)
+    return fcn.partial(__elitist_evolve, get_select, crossover, mutate, evaluate)
 
 
 def __create_child(select, crossover, mutate, evaluate, dummy):
@@ -36,7 +36,7 @@ def __create_child(select, crossover, mutate, evaluate, dummy):
     return child
 
 
-def __evolve(get_select, crossover, mutate, evaluate, population):
+def __elitist_evolve(get_select, crossover, mutate, evaluate, population):
     '''
     This function uses crossover, mutate and evalute, functions
     passed as arguments to get_steady_evolve.
