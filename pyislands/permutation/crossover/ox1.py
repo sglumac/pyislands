@@ -4,7 +4,8 @@ from itertools import chain, islice
 
 def order_merge(swath, parent2, break1, break2, num_genes):
     ''' merge order '''
-    in_swath = lambda gene: gene not in swath
+    swath_set = set(swath)
+    in_swath = lambda gene: gene not in swath_set
 
     inv_parent2 = chain(islice(parent2, break2, num_genes),
                         islice(parent2, break2))

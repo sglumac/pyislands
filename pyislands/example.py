@@ -16,7 +16,7 @@ from pyislands.archipelago.emmigration import get_emmigration
 
 from pyislands.permutation.generate import get_random_permutation_generator
 from pyislands.permutation.mutation.rsm import get_reversed_sequence_mutation
-from pyislands.permutation.crossover.pmx import partially_mapped_crossover
+from pyislands.permutation.crossover.ox1 import order_crossover1
 import pyislands.permutation.tsp.graph as tsp
 
 from itertools import chain
@@ -43,7 +43,7 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
 
     mutate = get_reversed_sequence_mutation(mutation_probability)
 
-    crossover = partially_mapped_crossover
+    crossover = order_crossover1
 
     evolve = ga.steady.get_evolution(crossover, mutate, evaluate)
 
@@ -137,4 +137,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, False)
+    main_tsp(500, True, True)
