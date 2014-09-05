@@ -67,3 +67,22 @@ def get_solution(island, num_iterations):
               format(pid, iteration, least_penalty))
 
     return min(population)
+
+
+def get_stagnation_solution(island, max_stagnation):
+
+    stagnation = 0
+    best = float('inf')
+
+    for population in takewhile(lambda: stagnation < max_stagnation,
+                                evolution(island)):
+
+        population_best = min(population)
+
+        if population_best < best:
+            stagnation = 0
+            best = min(population)
+
+        stagnation += 1
+
+    return min(population)
