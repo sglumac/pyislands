@@ -4,6 +4,7 @@ Module containing an implementation of generational genetic algorithm.
 from pyislands.types import create_individual
 
 import functools as fcn
+from  itertools import chain
 
 
 def get_elitist_evolution(get_select, crossover, mutate, evaluate):

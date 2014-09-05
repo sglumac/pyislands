@@ -4,6 +4,8 @@ Module containing selection functions on population
 import random
 from math import floor, sqrt
 
+import functools as fcn
+
 
 def ktournament(k, population):
     '''
@@ -39,7 +41,7 @@ def __ranking_select(sp, population):
 
     individual = population[idx]
 
-    return individiual, idx
+    return individual
 
 
 def get_ranking_select(selection_pressure, population):
@@ -63,6 +65,6 @@ def get_ranking_select(selection_pressure, population):
     sp = selection_pressure + 1
 
 # the best individual has the largest index
-    population = sort(population, reverse=True)
+    population = sorted(population, reverse=True)
 
     return fcn.partial(__ranking_select, sp, population)

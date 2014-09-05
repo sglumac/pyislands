@@ -14,6 +14,7 @@ from pyislands.archipelago.immigration import get_immigration
 from pyislands.archipelago import emmigration
 from pyislands.archipelago.emmigration import get_emmigration
 
+from pyislands.selection import get_ranking_select
 from pyislands.permutation.generate import get_random_permutation_generator
 from pyislands.permutation.mutation.rsm import get_reversed_sequence_mutation
 from pyislands.permutation.crossover.ox1 import order_crossover1
@@ -45,7 +46,8 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
 
     crossover = order_crossover1
 
-    evolve = ga.steady.get_evolution(crossover, mutate, evaluate)
+    get_select = fcn.partial(get_ranking_select, 0.5)
+    evolve = ga.generational.get_elitist_evolution(get_select, crossover, mutate, evaluate)
 
     create_population = fcn.partial(island.create_population, generate, evaluate,
                          population_size)
@@ -137,4 +139,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, False)
+    main_tsp(500, False, False)
