@@ -2,7 +2,7 @@ from pyislands.types import create_individual
 
 import os
 import functools as fcn
-from itertools import islice, count
+from itertools import islice, count, takewhile
 
 
 def create_population(generate, evaluate, population_size):
