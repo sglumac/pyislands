@@ -87,6 +87,5 @@ def get_stagnation_solution(island, max_stagnation):
 
         stagnation += 1
         iteration += 1
-        print stagnation, iteration, best.penalty
 
     return min(population), iteration
