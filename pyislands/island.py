@@ -1,4 +1,4 @@
-from pyislands.types import create_individual
+from pyislands.types import create_individual, Individual
 
 import os
 import functools as fcn
@@ -72,7 +72,7 @@ def get_solution(island, num_iterations):
 def get_stagnation_solution(island, max_stagnation):
 
     stagnation = 0
-    best = float('inf')
+    best = Individual(float('inf'), None)
     iteration = 0
 
     for population in takewhile(lambda dummy: stagnation < max_stagnation,
@@ -84,7 +84,9 @@ def get_stagnation_solution(island, max_stagnation):
             stagnation = 0
             best = min(population)
 
+
         stagnation += 1
         iteration += 1
+        print stagnation, iteration, best.penalty
 
     return min(population), iteration

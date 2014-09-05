@@ -65,10 +65,10 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
 # Simple Genetic Algorithm
     create_population, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
-    penalty, solution = island.get_solution(Island(create_population, evolve,
-                                            None, None, None), num_iterations)
+    best, _ = island.get_stagnation_solution(Island(create_population, evolve,
+                                            None, None, None), 100)
 
-    return tuple(chain([0], solution, [0])), penalty
+    return tuple(chain([0], best.genotype, [0])), best.penalty
 
 
 def solve_tsp_islands(adjacency_matrix, num_cities,
