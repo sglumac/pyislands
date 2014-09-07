@@ -9,10 +9,10 @@ from pyislands.types import Island
 
 from pyislands.archipelago import topology
 from pyislands.archipelago import form_destinations
-from pyislands.archipelago import immigration
-from pyislands.archipelago.immigration import get_immigration
-from pyislands.archipelago import emmigration
-from pyislands.archipelago.emmigration import get_emmigration
+from pyislands.archipelago import assimilation
+from pyislands.archipelago.assimilation import get_immigration
+from pyislands.archipelago import migration
+from pyislands.archipelago.migration import get_emmigration
 
 from pyislands.selection import get_ranking_select
 from pyislands.permutation.generate import get_random_permutation_generator
@@ -99,11 +99,11 @@ def solve_tsp_islands(adjacency_matrix, num_cities,
     destinations = form_destinations(migration_graph, airports)
 
     immigrations = \
-        tuple(get_immigration(airport, immigration.policy_2tournament)
+        tuple(get_immigration(airport, assimilation.policy_2tournament)
               for airport in airports)
 
     emmigrations = \
-        tuple(get_emmigration(emmigration.random_policy, migration_size, island_destinations)
+        tuple(get_emmigration(migration.random_policy, migration_size, island_destinations)
               for island_destinations in destinations)
 
     #immigrations = (None,) * num_islands
