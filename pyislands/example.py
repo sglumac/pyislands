@@ -16,7 +16,7 @@ from pyislands.archipelago import migration
 from pyislands.archipelago.migration import get_emmigration
 
 from pyislands.selection import get_ranking_select
-from pyislands.permutation.generate import get_random_permutation_generator
+from pyislands.permutation.generate import get_number_permutation_generator
 from pyislands.permutation.mutation.rsm import get_reversed_sequence_mutation
 from pyislands.permutation.crossover.ox1 import order_crossover1
 import pyislands.permutation.tsp.graph as tsp
@@ -25,11 +25,7 @@ from itertools import chain
 import functools as fcn
 
 
-def evaluate_tsp(adjacency_matrix, genotype):
-    return tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
-
-
-def generate_tsp_evolution(adjacency_matrix, num_cities):
+def generate_tsp_evolution(adjacency_matrix):
     '''
     This function defines algorithm used for solving a travelling salesman
     problem. Algorithm parameters are hardcoded into this function, it is just
@@ -39,10 +35,9 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     population_size = 10
     mutation_probability = 0.8
 
-    evaluate = fcn.partial(evaluate_tsp, adjacency_matrix)
+    evaluate = tsp.get_evalute_cycle(adjacency_matrix)
 
-    elements = list(range(1, num_cities))
-    generate = get_random_permutation_generator(elements)
+    generate = get_number_permutation_generator(1, len(adjacency_matrix))
 
     mutate = get_reversed_sequence_mutation(mutation_probability)
 
@@ -56,7 +51,7 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     return create_population, evolve
 
 
-def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
+def solve_tsp_classic(adjacency_matrix, num_iterations=20000):
     '''
     This functions runs a simple genetic algorithm which evolves a solution of
     a travelling salesman problem. It shows how to print out simple diagnostic
@@ -64,7 +59,7 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     '''
 
 # Simple Genetic Algorithm
-    create_population, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    create_population, evolve = generate_tsp_evolution(adjacency_matrix)
 
     best, _ = get_stagnation_solution(Island(create_population, evolve,
                                              None, None, None), 100)
@@ -72,8 +67,7 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
     return tuple(chain([0], best.genotype, [0])), best.penalty
 
 
-def solve_tsp_islands(adjacency_matrix, num_cities,
-                      num_iterations=10000, use_multiprocess=False):
+def solve_tsp_islands(adjacency_matrix, num_iterations=10000, use_multiprocess=False):
     '''
     This functions runs an island genetic algorithm which evolves a solution of
     a travelling salesman problem. It shows how to print out simple diagnostic
@@ -86,7 +80,7 @@ def solve_tsp_islands(adjacency_matrix, num_cities,
     degree = 1
 
 # Simple Genetic Algorithm
-    create_population, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
+    create_population, evolve = generate_tsp_evolution(adjacency_matrix)
 
 # Migration Setup
     airports = \
@@ -107,8 +101,6 @@ def solve_tsp_islands(adjacency_matrix, num_cities,
         tuple(get_emmigration(migration.random_policy, migration_size, island_destinations)
               for island_destinations in destinations)
 
-    #immigrations = (None,) * num_islands
-    #emmigrations = (None,) * num_islands
     islands = tuple(Island(create_population, evolve,
                            immigrate, emmigrate, migration_interval)
                     for immigrate, emmigrate in zip(immigrations, emmigrations))
@@ -130,14 +122,14 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
     adjacency_matrix = tsp.generate_graph(cities)
 
     if use_islands:
-        solution, penalty = solve_tsp_islands(adjacency_matrix, num_cities, 100,
+        solution, penalty = solve_tsp_islands(adjacency_matrix,
                                               use_multiprocess=use_multiprocess)
     else:
-        solution, penalty = solve_tsp_classic(adjacency_matrix, num_cities)
+        solution, penalty = solve_tsp_classic(adjacency_matrix)
 
     print("solution = {0}".format(solution))
     print("penalty = {0}".format(penalty))
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, False)
+    main_tsp(500, True, True)

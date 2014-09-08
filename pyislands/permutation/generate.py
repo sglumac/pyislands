@@ -2,6 +2,11 @@ import random
 import functools as fcn
 
 
+def get_number_permutation_generator(start, end):
+    ''' Closure around elements (start, start + 1, ..., end - 1) '''
+    return get_random_permutation_generator(range(start, end))
+
+
 def get_random_permutation_generator(elements):
     '''
     Generates closure around elements = (x_0, x_1, x_2, ..., x_n-1). This

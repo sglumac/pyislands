@@ -1,6 +1,8 @@
 from math import sqrt
 from random import random
 import itertools
+from itertools import chain
+import functools as fcn
 
 
 def generate_graph(cities):
@@ -19,7 +21,7 @@ def generate_graph(cities):
     return adjacency_matrix
 
 
-def evaluate_path(adjacency_matrix, tsp_path):
+def __evaluate_path(adjacency_matrix, tsp_path):
     '''
     function for evaluation of cycle given list
 
@@ -29,6 +31,22 @@ def evaluate_path(adjacency_matrix, tsp_path):
     next(iter1, None)
     return sum(adjacency_matrix[city1][city2]
                for city1, city2 in zip(iter0, iter1))
+
+
+def get_evaluate_path(adjacency_matrix):
+    ''' evaluate tsp path '''
+    return fcn.partial(__evaluate_path, adjacency_matrix)
+
+
+def __evaluate_cycle(adjacency_matrix, tsp_path):
+    ''' evaluate path that is part of the cycle '''
+    nul = [0]
+    return __evaluate_path(adjacency_matrix, chain(nul, list(tsp_path), nul))
+
+
+def get_evalute_cycle(adjacency_matrix):
+    ''' evaluate path that is part of the cycle '''
+    return fcn.partial(__evaluate_cycle, adjacency_matrix)
 
 
 def random_cities(num_cities=100):
