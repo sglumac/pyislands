@@ -1,4 +1,4 @@
-from pyislands.evolution import get_solution
+from pyislands import evolution as ev
 
 import multiprocessing
 from itertools import repeat
@@ -26,7 +26,7 @@ def get_solution(islands, num_iterations):
     num_islands = len(islands)
     pool = multiprocessing.Pool(processes=num_islands)
 
-    futures = [pool.apply_async(get_solution, (island, num_iterations))
+    futures = [pool.apply_async(ev.get_solution, (island, num_iterations))
                for island in islands]
 
     solutions = tuple(map(methodcaller('get'), futures))

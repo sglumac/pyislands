@@ -130,7 +130,7 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
     adjacency_matrix = tsp.generate_graph(cities)
 
     if use_islands:
-        solution, penalty = solve_tsp_islands(adjacency_matrix, num_cities,
+        solution, penalty = solve_tsp_islands(adjacency_matrix, num_cities, 100,
                                               use_multiprocess=use_multiprocess)
     else:
         solution, penalty = solve_tsp_classic(adjacency_matrix, num_cities)
@@ -140,4 +140,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, False)
+    main_tsp(500, True, True)
