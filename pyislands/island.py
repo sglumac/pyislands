@@ -2,7 +2,7 @@ from pyislands.types import create_individual, Individual
 
 import os
 import functools as fcn
-from itertools import islice, count, takewhile
+from itertools import islice, takewhile
 
 
 def create_population(generate, evaluate, population_size):
@@ -34,24 +34,24 @@ def evolution(island):
     influenced by outside functions. Population can be used only to gather
     statistics
 
-    If no immigration and emmigration is used this island evolution 
+    If no immigration and emmigration is used this island evolution
     becomes a classical genetic algorithm.
     '''
 
     population = island.create_population()
 
-    for iteration in count():
-        yield population
-
+    while True:
+        for _ in range(island.migration_interval if island.emmigrate else 1):
+            yield population
 # Immigration - Outside individuals are inhabiting an island
-        if island.immigrate:
-            population = island.immigrate(population)
+            if island.immigrate:
+                population = island.immigrate(population)
 
 # Evolution - Each island population is evolved into the next generation
-        population = island.evolve(population)
+            population = island.evolve(population)
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
-        if island.emmigrate and iteration % island.migration_interval == 0:
+        if island.emmigrate:
             island.emmigrate(population)
 
 
@@ -72,20 +72,22 @@ def get_solution(island, num_iterations):
 def get_stagnation_solution(island, max_stagnation):
 
     stagnation = 0
-    best = Individual(float('inf'), None)
     iteration = 0
 
-    for population in takewhile(lambda dummy: stagnation < max_stagnation,
-                                evolution(island)):
+    best = Individual(float('inf'), None)
+
+    for population in evolution(island):
 
         population_best = min(population)
 
         if population_best < best:
             stagnation = 0
-            best = min(population)
-
+            best = population_best
 
         stagnation += 1
         iteration += 1
+
+        if stagnation >= max_stagnation:
+            break
 
     return min(population), iteration
