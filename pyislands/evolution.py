@@ -75,7 +75,7 @@ def get_stagnation_solution(island, max_stagnation):
         stagnation += 1
         iteration += 1
 
-        print iteration, stagnation, best.penalty
+        print("{0} {1} {2}".format(iteration, stagnation, best.penalty))
 
         if stagnation >= max_stagnation:
             break
