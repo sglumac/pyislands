@@ -32,9 +32,10 @@ def get_solution(islands, num_iterations):
     '''
 
 
-    evolutions = map(evolution, islands)
+    evolutions = (islice(evolution(island), num_iterations)
+                  for island in islands)
 
-    for iteration, populations in islice(enumerate(zip(*evolutions)), num_iterations):
+    for iteration, populations in enumerate(zip(*evolutions)):
         best_individuals = map(min, populations)
         least_penalty, _ = min(best_individuals)
         print("iteration = {0}, penalty = {1}".
