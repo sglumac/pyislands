@@ -4,7 +4,7 @@ from collections import namedtuple
 Individual = namedtuple('Individual', ['penalty', 'genotype'])
 
 Island = namedtuple('Island', ['create_population', 'evolve',
-                               'immigrate', 'emmigrate', 'migration_interval'])
+                               'assimilate', 'migrate', 'migration_interval'])
 
 
 def create_individual(evaluate, genotype):

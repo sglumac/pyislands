@@ -41,18 +41,18 @@ def evolution(island):
     population = island.create_population()
 
     while True:
-        for _ in range(island.migration_interval if island.emmigrate else 1):
+        for _ in range(island.migration_interval if island.migrate else 1):
             yield population
 # Immigration - Outside individuals are inhabiting an island
-            if island.immigrate:
-                population = island.immigrate(population)
+            if island.assimilate:
+                population = island.assimilate(population)
 
 # Evolution - Each island population is evolved into the next generation
             population = island.evolve(population)
 
 # Emmigration - Sends individuals (clones) from one population onto voyage
-        if island.emmigrate:
-            island.emmigrate(population)
+        if island.migrate:
+            island.migrate(population)
 
 
 def get_solution(island, num_iterations):
