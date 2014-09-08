@@ -140,4 +140,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, True)
+    main_tsp(500, True, False)

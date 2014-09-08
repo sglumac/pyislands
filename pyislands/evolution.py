@@ -1,6 +1,5 @@
 from pyislands.types import Individual
 
-import os
 from itertools import islice
 
 
@@ -43,18 +42,9 @@ def evolution(island):
             island.migrate(population)
 
 
-def get_solution(island, num_iterations):
-    '''
-    Utility function used for getting a solution from a single islands.
-    '''
-
-    for iteration, population in islice(enumerate(evolution(island)), num_iterations):
-        least_penalty, _ = min(population)
-        pid = os.getpid()
-        print("pid = {0}, iteration = {1}, penalty = {2}".
-              format(pid, iteration, least_penalty))
-
-    return min(population)
+def finite_evolution(num_iterations, island):
+    ''' Same as evolution, except stopped after num_iterations '''
+    return islice(evolution(island), num_iterations)
 
 
 def get_stagnation_solution(island, max_stagnation):
