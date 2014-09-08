@@ -1,19 +1,7 @@
-from pyislands.types import create_individual, Individual
+from pyislands.types import Individual
 
 import os
-import functools as fcn
-from itertools import islice, takewhile
-
-
-def create_population(generate, evaluate, population_size):
-    '''
-    This function is used in steady_evolve to create an initial
-    population.
-    '''
-    genotypes = tuple(generate() for _ in range(population_size))
-    population = tuple(map(fcn.partial(create_individual, evaluate), genotypes))
-
-    return population
+from itertools import islice
 
 
 def evolution(island):
@@ -86,6 +74,8 @@ def get_stagnation_solution(island, max_stagnation):
 
         stagnation += 1
         iteration += 1
+
+        print iteration, stagnation, best.penalty
 
         if stagnation >= max_stagnation:
             break

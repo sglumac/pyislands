@@ -4,7 +4,8 @@ problem using pyislands.
 '''
 from pyislands import ga
 from pyislands import archipelago
-from pyislands import island
+from pyislands.evolution import evolution, get_stagnation_solution
+from pyislands.creation import get_create_population
 from pyislands.types import Island
 
 from pyislands.archipelago import topology
@@ -26,6 +27,7 @@ import functools as fcn
 
 def evaluate_tsp(adjacency_matrix, genotype):
     return tsp.evaluate_path(adjacency_matrix, [0] + list(genotype) + [0])
+
 
 def generate_tsp_evolution(adjacency_matrix, num_cities):
     '''
@@ -49,8 +51,7 @@ def generate_tsp_evolution(adjacency_matrix, num_cities):
     get_select = fcn.partial(get_ranking_select, 0.5)
     evolve = ga.generational.get_elitist_evolution(get_select, crossover, mutate, evaluate)
 
-    create_population = fcn.partial(island.create_population, generate, evaluate,
-                         population_size)
+    create_population = get_create_population(generate, evaluate, population_size)
 
     return create_population, evolve
 
@@ -65,8 +66,8 @@ def solve_tsp_classic(adjacency_matrix, num_cities, num_iterations=20000):
 # Simple Genetic Algorithm
     create_population, evolve = generate_tsp_evolution(adjacency_matrix, num_cities)
 
-    best, _ = island.get_stagnation_solution(Island(create_population, evolve,
-                                            None, None, None), 100)
+    best, _ = get_stagnation_solution(Island(create_population, evolve,
+                                             None, None, None), 100)
 
     return tuple(chain([0], best.genotype, [0])), best.penalty
 
@@ -139,4 +140,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, False)
+    main_tsp(500, False, False)
