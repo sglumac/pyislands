@@ -17,7 +17,8 @@ from itertools import chain
 
 
 def solve_tsp_classic(adjacency_matrix, max_stagnation=100, population_size=10,
-                      selection_pressure=0.5, mutation_probability=0.6):
+                      selection_pressure=0.5, mutation_probability=0.6,
+                      verbose=True):
     '''
     This functions runs a simple genetic algorithm which evolves a solution of
     a travelling salesman problem. It shows how to print out simple diagnostic
@@ -32,8 +33,9 @@ def solve_tsp_classic(adjacency_matrix, max_stagnation=100, population_size=10,
     island = create_single_island(create_population, evolve)
     enumerated_evolution = enumerate(stagnation_evolution(max_stagnation, island))
     for iteration, population in enumerated_evolution:
-        best = min(population)
-        print("iter = {0}, penalty = {1}".format(iteration, best.penalty))
+        if verbose:
+            best = min(population)
+            print("iter = {0}, penalty = {1}".format(iteration, best.penalty))
 
     return tuple(tsp.form_cycle(best.genotype)), best.penalty
 
