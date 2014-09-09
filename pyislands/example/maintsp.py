@@ -35,7 +35,7 @@ def solve_tsp_classic(adjacency_matrix, max_stagnation=100, population_size=10,
         best = min(population)
         print("iter = {0}, penalty = {1}".format(iteration, best.penalty))
 
-    return tuple(chain([0], best.genotype, [0])), best.penalty
+    return tuple(tsp.form_cycle(best.genotype)), best.penalty
 
 
 def solve_tsp_islands(adjacency_matrix, num_iterations=10000, use_multiprocess=False):
@@ -82,7 +82,7 @@ def solve_tsp_islands(adjacency_matrix, num_iterations=10000, use_multiprocess=F
         if use_multiprocess else \
         archipelago.nonparallel.get_solution(islands, num_iterations)
 
-    return tuple(chain([0], solution, [0])), penalty
+    return tuple(tsp.form_cycle(solution)), penalty
 
 
 def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):

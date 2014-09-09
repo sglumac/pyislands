@@ -38,10 +38,19 @@ def get_evaluate_path(adjacency_matrix):
     return fcn.partial(__evaluate_path, adjacency_matrix)
 
 
+def form_cycle(tsp_path, start_city=0):
+    '''
+    returns an iterator containing cycle
+    [start_city] -> tsp_path -> [start_city]
+    '''
+    start_list = [start_city]
+    return chain(start_list, tsp_path, start_list)
+
+
 def __evaluate_cycle(adjacency_matrix, tsp_path):
     ''' evaluate path that is part of the cycle '''
     nul = [0]
-    return __evaluate_path(adjacency_matrix, chain(nul, list(tsp_path), nul))
+    return __evaluate_path(adjacency_matrix, form_cycle(tsp_path))
 
 
 def get_evaluate_cycle(adjacency_matrix):
