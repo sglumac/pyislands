@@ -44,7 +44,7 @@ def __evaluate_cycle(adjacency_matrix, tsp_path):
     return __evaluate_path(adjacency_matrix, chain(nul, list(tsp_path), nul))
 
 
-def get_evalute_cycle(adjacency_matrix):
+def get_evaluate_cycle(adjacency_matrix):
     ''' evaluate path that is part of the cycle '''
     return fcn.partial(__evaluate_cycle, adjacency_matrix)
 

@@ -1,7 +1,6 @@
-from pyislands import evolution as ev
+from pyislands.evolution import finite_evolution
 
 import multiprocessing
-from itertools import islice
 import functools as fcn
 
 
@@ -19,8 +18,9 @@ def create_airports(num_islands):
 
 
 def __get_solution(num_iterations, island):
-    for population in islice(ev.evolution(island), num_iterations):
-        print min(population).penalty
+    for population in finite_evolution(num_iterations, island):
+        best = min(population)
+        print("penalty = {0}".format(best.penalty))
     return min(population)
 
 
@@ -32,6 +32,8 @@ def get_solution(islands, num_iterations):
     num_islands = len(islands)
     pool = multiprocessing.Pool(processes=num_islands)
 
-    solutions = pool.map(fcn.partial(__get_solution, num_iterations), islands)
+    solution_after_niter = fcn.partial(__get_solution, num_iterations) 
+
+    solutions = pool.map(solution_after_niter, islands)
 
     return min(solutions)

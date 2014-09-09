@@ -1,6 +1,6 @@
 from pyislands.permutation.tsp.mutation import get_twoopt_mutation
 from pyislands.permutation.tsp.graph import generate_graph, random_cities
-from pyislands.permutation.tsp.graph import evaluate_path
+from pyislands.permutation.tsp.graph import get_evaluate_cycle
 
 def create_random_twoopt():
     adjacency_matrix = generate_graph(random_cities(10))
@@ -25,10 +25,6 @@ def test1_two_opt():
 
     new_genotype = two_opt(genotype)
 
-    evaluate = lambda g: evaluate_path(adjacency_matrix, [0] + list(g) + [0])
+    evaluate = get_evaluate_cycle(adjacency_matrix)
 
     assert evaluate(new_genotype) < evaluate(genotype)
-
-
-
-

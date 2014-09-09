@@ -1,5 +1,3 @@
-from pyislands.types import Individual
-
 from itertools import islice
 
 
@@ -47,27 +45,23 @@ def finite_evolution(num_iterations, island):
     return islice(evolution(island), num_iterations)
 
 
-def get_stagnation_solution(island, max_stagnation):
+def stagnation_evolution(max_stagnation, island):
+    ''' Same as evolution, except stopped after max_stagnation '''
+
+    infinite_evolution = evolution(island)
+
+    population = next(infinite_evolution)
+
+    best = min(population)
 
     stagnation = 0
-    iteration = 0
 
-    best = Individual(float('inf'), None)
-
-    for population in evolution(island):
-
-        population_best = min(population)
-
-        if population_best < best:
-            stagnation = 0
-            best = population_best
-
+    while stagnation < max_stagnation:
         stagnation += 1
-        iteration += 1
+        yield population
+        population = next(infinite_evolution)
 
-        print("{0} {1} {2}".format(iteration, stagnation, best.penalty))
-
-        if stagnation >= max_stagnation:
-            break
-
-    return min(population), iteration
+        current_best = min(population)
+        if current_best < best:
+            stagnation = 0
+            best = current_best

@@ -2,7 +2,7 @@
 Synchronous Island creation for testing on a single computer,
 this module connects populations/islands using simple queues/lists.
 '''
-from pyislands.evolution import evolution
+from pyislands.evolution import finite_evolution
 
 import sys
 if sys.version_info[0] == 2:
@@ -32,7 +32,7 @@ def get_solution(islands, num_iterations):
     '''
 
 
-    evolutions = (islice(evolution(island), num_iterations)
+    evolutions = (finite_evolution(num_iterations, island)
                   for island in islands)
 
     for iteration, populations in enumerate(zip(*evolutions)):

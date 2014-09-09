@@ -1,5 +1,5 @@
 import pyislands.permutation.tsp.graph as tsp
-from pyislands.example import solve_tsp_classic, solve_tsp_islands
+from pyislands.example.maintsp import solve_tsp_classic, solve_tsp_islands
 
 from math import sqrt
 

@@ -22,7 +22,7 @@ def generate_tsp_evolution(population_size, selection_pressure,
     an example.
     '''
 
-    evaluate = tsp.get_evalute_cycle(adjacency_matrix)
+    evaluate = tsp.get_evaluate_cycle(adjacency_matrix)
 
     generate = get_number_permutation_generator(1, len(adjacency_matrix))
 
