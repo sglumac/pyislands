@@ -26,7 +26,7 @@ def create_airports(num_islands):
 
 
 
-def get_solution(islands, num_iterations):
+def get_solution(islands, num_iterations, verbose=True):
     '''
     Utility function used for getting a solutions from a single process algorithm.
     '''
@@ -36,9 +36,10 @@ def get_solution(islands, num_iterations):
                   for island in islands)
 
     for iteration, populations in enumerate(zip(*evolutions)):
-        best_individuals = map(min, populations)
-        least_penalty, _ = min(best_individuals)
-        print("iteration = {0}, penalty = {1}".
-              format(iteration, least_penalty))
+        if verbose:
+            best_individuals = map(min, populations)
+            least_penalty, _ = min(best_individuals)
+            print("iteration = {0}, penalty = {1}".
+                  format(iteration, least_penalty))
 
     return min(map(min, populations))

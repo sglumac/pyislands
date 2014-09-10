@@ -53,7 +53,7 @@ def solve_tsp_islands(adjacency_matrix, num_iterations=10000, use_multiprocess=F
     degree = 1
 
 # Simple Genetic Algorithm
-    create_population, evolve = generate_tsp_evolution(10, 0.5, 0.8,
+    create_population, evolve = generate_tsp_evolution(10, 0.6, 0.7,
                                                        adjacency_matrix)
 
 # Migration Setup
@@ -96,7 +96,7 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
     adjacency_matrix = tsp.generate_graph(cities)
 
     if use_islands:
-        solution, penalty = solve_tsp_islands(adjacency_matrix, 1000,
+        solution, penalty = solve_tsp_islands(adjacency_matrix, 100,
                                               use_multiprocess=use_multiprocess)
     else:
         solution, penalty = solve_tsp_classic(adjacency_matrix)
@@ -106,4 +106,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, True)
+    main_tsp(500, True, False)
