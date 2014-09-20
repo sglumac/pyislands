@@ -3,17 +3,17 @@ from pyislands.selection import ktournament
 import functools as fcn
 
 
-def get_immigration(airport, policy):
+def get_assimilation(airport, policy):
     '''
-    This function returns immigrate function:
-        new_population = immigrate(population)
+    This function returns assimilate function:
+        new_population = assimilate(population)
     '''
-    return fcn.partial(__immigrate, policy, airport)
+    return fcn.partial(__assimilate, policy, airport)
 
 
-def __immigrate(policy, airport, population):
+def __assimilate(policy, airport, population):
     '''
-    Immigration imports all immigrants from the airport.
+    Assimilation imports all immigrants from the airport.
     The airport should support get, put and empty methods (e.g. Queue.Queue or
     multiprocessing.Queue).
 
@@ -34,7 +34,7 @@ def __immigrate(policy, airport, population):
 
 
 def policy_2tournament(population, immigrants):
-    ''' immigration policy of some population '''
+    ''' assimilation policy of some population '''
 
     new_population = list(population)
 
