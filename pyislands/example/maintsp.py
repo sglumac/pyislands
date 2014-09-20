@@ -40,21 +40,21 @@ def solve_tsp_classic(adjacency_matrix, max_stagnation=100, population_size=10,
     return tuple(tsp.form_cycle(best.genotype)), best.penalty
 
 
-def solve_tsp_islands(adjacency_matrix, num_iterations=10000, use_multiprocess=False):
+def solve_tsp_islands(adjacency_matrix, num_iterations=10000,
+                      use_multiprocess=False, population_size=10,
+                      selection_pressure=0.5, mutation_probability=0.6,
+                      num_islands=4, migration_size=1, migration_interval=1,
+                      degree=1, verbose=True):
     '''
     This functions runs an island genetic algorithm which evolves a solution of
     a travelling salesman problem. It shows how to print out simple diagnostic
     for population.
     '''
 
-    num_islands = 4
-    migration_size = 1
-    migration_interval = 1
-    degree = 1
-
 # Simple Genetic Algorithm
-    create_population, evolve = generate_tsp_evolution(10, 0.6, 0.7,
-                                                       adjacency_matrix)
+    create_population, evolve = \
+        generate_tsp_evolution(population_size, selection_pressure,
+                               mutation_probability, adjacency_matrix)
 
 # Migration Setup
     airports = \
@@ -80,14 +80,15 @@ def solve_tsp_islands(adjacency_matrix, num_iterations=10000, use_multiprocess=F
                     for immigrate, emmigrate in zip(immigrations, emmigrations))
 
     penalty, solution = \
-        archipelago.multiprocess.get_solution(islands, num_iterations) \
+        archipelago.multiprocess.get_solution(islands, num_iterations, verbose) \
         if use_multiprocess else \
-        archipelago.nonparallel.get_solution(islands, num_iterations)
+        archipelago.nonparallel.get_solution(islands, num_iterations, verbose)
 
     return tuple(tsp.form_cycle(solution)), penalty
 
 
-def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
+def main_tsp(num_cities=100, num_iterations=100, use_islands=False,
+             use_multiprocess=False, verbose=True):
     '''
     This functions creates a random travelling salesman problem and
     solves it using classical or island model genetic algorithm.
@@ -96,8 +97,9 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
     adjacency_matrix = tsp.generate_graph(cities)
 
     if use_islands:
-        solution, penalty = solve_tsp_islands(adjacency_matrix, 100,
-                                              use_multiprocess=use_multiprocess)
+        solution, penalty = solve_tsp_islands(adjacency_matrix, num_iterations,
+                                              use_multiprocess=use_multiprocess,
+                                              verbose=verbose)
     else:
         solution, penalty = solve_tsp_classic(adjacency_matrix)
 
@@ -106,4 +108,4 @@ def main_tsp(num_cities=100, use_islands=False, use_multiprocess=False):
 
 
 if __name__ == '__main__':
-    main_tsp(500, True, False)
+    main_tsp(num_cities=100, use_islands=True, use_multiprocess=True)
