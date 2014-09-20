@@ -7,7 +7,7 @@ from pyislands import archipelago
 from pyislands.archipelago import topology
 from pyislands.archipelago import form_destinations
 from pyislands.archipelago import assimilation
-from pyislands.archipelago.assimilation import get_immigration
+from pyislands.archipelago.assimilation import get_assimilation
 from pyislands.archipelago import migration
 from pyislands.archipelago.migration import get_emmigration
 
@@ -67,8 +67,8 @@ def solve_tsp_islands(adjacency_matrix, num_iterations=10000,
 
     destinations = form_destinations(migration_graph, airports)
 
-    immigrations = \
-        tuple(get_immigration(airport, assimilation.policy_2tournament)
+    assimilations = \
+        tuple(get_assimilation(airport, assimilation.policy_2tournament)
               for airport in airports)
 
     emmigrations = \
@@ -76,8 +76,8 @@ def solve_tsp_islands(adjacency_matrix, num_iterations=10000,
               for island_destinations in destinations)
 
     islands = tuple(Island(create_population, evolve,
-                           immigrate, emmigrate, migration_interval)
-                    for immigrate, emmigrate in zip(immigrations, emmigrations))
+                           assimilate, emmigrate, migration_interval)
+                    for assimilate, emmigrate in zip(assimilations, emmigrations))
 
     penalty, solution = \
         archipelago.multiprocess.get_solution(islands, num_iterations, verbose) \
@@ -108,4 +108,4 @@ def main_tsp(num_cities=100, num_iterations=100, use_islands=False,
 
 
 if __name__ == '__main__':
-    main_tsp(num_cities=100, use_islands=True, use_multiprocess=True)
+    main_tsp(num_cities=100, use_islands=True, use_multiprocess=False)
