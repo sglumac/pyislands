@@ -21,7 +21,7 @@ test_requirements = [
 
 setup(
     name='pyislands',
-    version='0.1.2',
+    version='0.1.3',
     description='PyIslands contains an implementation of islands genetic algorithms.',
     long_description=readme + '\n\n' + history,
     author='Slaven Glumac',

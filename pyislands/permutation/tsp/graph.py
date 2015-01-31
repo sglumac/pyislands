@@ -47,15 +47,15 @@ def form_cycle(tsp_path, start_city=0):
     return chain(start_list, tsp_path, start_list)
 
 
-def __evaluate_cycle(adjacency_matrix, tsp_path):
+def __evaluate_cycle(adjacency_matrix, start_city, tsp_path):
     ''' evaluate path that is part of the cycle '''
-    nul = [0]
-    return __evaluate_path(adjacency_matrix, form_cycle(tsp_path))
+    assert start_city not in tsp_path
+    return __evaluate_path(adjacency_matrix, form_cycle(tsp_path, start_city))
 
 
-def get_evaluate_cycle(adjacency_matrix):
+def get_evaluate_cycle(adjacency_matrix, start_city=0):
     ''' evaluate path that is part of the cycle '''
-    return fcn.partial(__evaluate_cycle, adjacency_matrix)
+    return fcn.partial(__evaluate_cycle, adjacency_matrix, start_city)
 
 
 def random_cities(num_cities=100):
