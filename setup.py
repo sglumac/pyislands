@@ -12,7 +12,7 @@ readme = open('README.rst').read()
 history = open('docs/history.rst').read().replace('.. :changelog:', '')
 
 requirements = [
-    # TODO: put package requirements here
+    # no requirements
 ]
 
 test_requirements = [
@@ -21,16 +21,17 @@ test_requirements = [
 
 setup(
     name='pyislands',
-    version='0.1.1',
+    version='0.1.2',
     description='PyIslands contains an implementation of islands genetic algorithms.',
     long_description=readme + '\n\n' + history,
     author='Slaven Glumac',
     author_email='slaven.glumac@gmail.com',
     url='https://github.com/sglumac/pyislands',
-    packages=[
-        'pyislands',
-    ],
-    package_dir={'pyislands': 'pyislands'},
+    packages=['pyislands', 'pyislands.ga', 'pyislands.archipelago',
+              'pyislands.example', 'pyislands.permutation',
+              'pyislands.permutation.crossover',
+              'pyislands.permutation.mutation',
+              'pyislands.permutation.tsp'],
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
